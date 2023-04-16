@@ -7,8 +7,10 @@ define([
     '/api/config',
     'optional!/api/instance',
 ], function (h, Language, AppConfig, Msg, $, ApiConfig, Instance) {
+    //用于处理CryptPad页面的一些功能，包括设置HTML、外部链接、文档链接、创建底部链接等。
     var Pages = {};
 
+    //接下来的几个函数是用于设置HTML内容、处理外部链接、本地化文档链接等。
     Pages.setHTML = function (e, html) {
         e.innerHTML = html;
         return e;
@@ -44,6 +46,8 @@ define([
         return Pages.externalLink(el, Pages.localizeDocsLink(href));
     };
 
+
+    // 定义了一个名为accounts的对象，其中包含了捐赠和升级的URL。
     var accounts = Pages.accounts = {
         donateURL: AppConfig.donateURL || "https://opencollective.com/cryptpad/",
         upgradeURL: AppConfig.upgradeURL
@@ -74,6 +78,7 @@ define([
         return select;
     };
 
+    // footLink函数用于创建底部链接。
     var footLink = function (ref, loc, text, icon) {
         if (!ref) { return; }
         var attrs =  {
@@ -95,6 +100,7 @@ define([
         return h('a', attrs, [icon, text]);
     };
 
+    // 设置了一些默认的URL和实例信息，以及一些版本信息。
     Pages.versionString = "5.2.1";
 
     var customURLs = Pages.customURLs = {};
@@ -138,6 +144,7 @@ define([
         Pages.Instance.description = Pages.Instance.description || Msg.main_catch_phrase;
     }());
 
+    // 定义了一些链接，用于关于菜单、法律声明链接、隐私政策链接、服务条款链接、源代码链接、文档链接和路线图链接。
     // used for the about menu
     Pages.imprintLink = footLink(customURLs.imprint, 'imprint');
     Pages.privacyLink = footLink(customURLs.privacy, 'privacy');
@@ -147,18 +154,24 @@ define([
     Pages.roadmapLink = footLink(customURLs.roadmap, 'footer_roadmap');
 
 
+    //Pages.infopageFooter函数用于创建信息页面的底部内容。
     Pages.infopageFooter = function () {
+        return;//lkj add here
+        //根据是否移除了捐赠按钮的设置，来决定是否显示捐赠按钮。如果没有移除，则生成一个指向 OpenCollective 捐赠页面的链接。
         var donateButton;
-        if (!ApiConfig.removeDonateButton) {
+        // if (!ApiConfig.removeDonateButton) {
+        if (false) {
             donateButton = footLink('https://opencollective.com/cryptpad/contribute/', 'footer_donate', null, 'money'); // TODO migrate to forkawesome and use the OpenCollective icon
         }
 
         return h('footer.cp-footer', [
+            // 生成一个包含 CryptPad Logo 和版本号的元素，并将其放在页脚的左侧
             h('div.cp-footer-left', [
                 h('a', {href:"https://cryptpad.org"}, [
                     h('div.cp-logo-foot', [
                         h('img', {
-                            src: '/customize/CryptPad_logo.svg',
+                            // src: '/customize/CryptPad_logo.svg',
+                            src: '/customize/laughter.svg',
                             "aria-hidden": true,
                             alt: ''
                         }),
@@ -167,12 +180,14 @@ define([
                 ]),
                 h('span.cp-footer-version', 'v' + Pages.versionString)
             ]),
+            // 生成包含网站链接和捐赠按钮的元素，并将其放在页脚的中心位置
             h('div.cp-footer-center', [
                 h('div.cp-logo-btns', [
                     footLink('https://cryptpad.org', null, Msg.footer_website, 'link'),
                     donateButton,
                 ])
             ]),
+            // 生成一个包含语言选择器的元素，并将其放在页脚的右侧位置
             h('div.cp-footer-right', [
                 h('div.cp-footer-language', [
                     h('i.fa.fa-language', {'aria-hidden': 'true'}),
@@ -182,11 +197,16 @@ define([
         ]);
     };
 
+    // Pages.infopageTopbar函数用于创建信息页面的顶部导航栏。
     Pages.infopageTopbar = function () {
+        return;//lkj add here
+
+
         var rightLinks;
-        var username = window.localStorage.getItem('User_name');
+        var username = window.localStorage.getItem('User_name');//获取了用户在本地存储中保存的用户名。这是一个通过 window.localStorage 对象来实现的操作。
         var registerLink;
 
+        //根据是否限制注册的设置，决定是否显示注册按钮。如果不限制，则生成一个指向注册页面的链接。
         if (!ApiConfig.restrictRegistration) {
             registerLink = h('a.nav-item.nav-link.cp-register-btn', { href: '/register/'}, [
                 h('i.fa.fa-user', {'aria-hidden':'true'}),
@@ -194,6 +214,8 @@ define([
             ]);
         }
 
+        // 根据用户名是否为空，来决定显示登录按钮还是用户头像按钮。
+        // 如果用户名为空，就显示登录和注册按钮。如果用户名不为空，就显示用户名和指向用户驱动器页面的链接。
         if (username === null) {
             rightLinks = [
                 h('a.nav-item.nav-link.cp-login-btn', { href: '/login/'}, [

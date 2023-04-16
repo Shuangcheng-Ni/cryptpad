@@ -1,10 +1,10 @@
 (function () {
     // Determine the logo path based on the current page
     // var logoPath = '/customize/CryptPad_logo.svg';
-    var logoPath = '/customize/our_logo.svg';
+    var logoPath = '/customize/car.svg';
     if (location.pathname === '/' || location.pathname === '/index.html') {
         // logoPath = '/customize/CryptPad_logo_hero.svg';
-        logoPath = '/customize/our_logo.svg';
+        logoPath = '/customize/laughter.svg';
     }
 
     // Create a div element with the ID 'placeholder'

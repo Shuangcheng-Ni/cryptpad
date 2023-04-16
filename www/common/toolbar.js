@@ -88,6 +88,8 @@ MessengerUI, Messages, Pages) {
         $('<span>', {'class': USERADMIN_CLS + ' cp-dropdown-container'}).hide().appendTo($userContainer);
 
         $toolbar.append($topContainer);
+        
+        //add 注释here:上方文档、主题、工具等
         var $bottom = $(h('div.'+BOTTOM_CLS, [
             h('div.'+BOTTOM_LEFT_CLS),
             h('div.'+BOTTOM_MID_CLS),

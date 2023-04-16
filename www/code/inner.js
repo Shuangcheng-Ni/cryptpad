@@ -207,7 +207,11 @@ define([
                     return;
                 }
                 $previewContainer.removeClass('cp-app-code-preview-isempty');
-                f(editor.getValue(), $preview, framework._.sfCommon);
+
+                // f(String(text("Hello, world!")), $preview, framework._.sfCommon);//原代码
+                var $preview = $('#cp-app-code-preview-content');
+                $preview.text("Hello, world!");//lkj add here——写死右边的数据
+
             } catch (e) { console.error(e); }
         };
 
@@ -504,6 +508,8 @@ define([
             CodeMirror.configureTheme(common);
         }
 
+
+
         // 当内容更新时，执行以下操作
         framework.onContentUpdate(function (newContent) {
             // 设置高亮模式
@@ -516,6 +522,7 @@ define([
             markers.checkMarks(newContent);
 
             // 更新编辑器内容
+            // CodeMirror.contentUpdate("waaaaaaaa");//lkj add 注释 here：用于修改界面以及内容更新
             CodeMirror.contentUpdate(newContent);//lkj add 注释 here：用于修改界面以及内容更新
             previewPane.draw();
 

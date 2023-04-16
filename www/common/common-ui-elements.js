@@ -1729,7 +1729,8 @@ define([
         var content = h('div.cp-info-menu-container', [
             h('div.logo-block', [
                 h('img', {
-                    src: '/customize/CryptPad_logo.svg?' + urlArgs
+                    // src: '/customize/CryptPad_logo.svg?' + urlArgs
+                    src: '/customize/train.svg?' + urlArgs
                 }),
                 h('h6', "CryptPad"),
                 h('span', Pages.versionString)
@@ -2397,7 +2398,8 @@ define([
         var $creationContainer = $('<div>', { id: 'cp-creation-container' }).appendTo($body);
         var urlArgs = (Config.requireConf && Config.requireConf.urlArgs) || '';
 
-        var logo = h('img', { src: '/customize/CryptPad_logo.svg?' + urlArgs });
+        // var logo = h('img', { src: '/customize/CryptPad_logo.svg?' + urlArgs });
+        var logo = h('img', { src: '/customize/laughter.svg?' + urlArgs });
         var fill1 = h('div.cp-creation-fill.cp-creation-logo', logo);
         var fill2 = h('div.cp-creation-fill');
         var $creation = $('<div>', { id: 'cp-creation', tabindex:1 });
@@ -3019,11 +3021,12 @@ define([
                 Feedback.send('CROWDFUNDING_NEVER');
             };
 
-            var modal = UI.cornerPopup(text, actions, '', {
-                big: true,
-                alt: true,
-                dontShowAgain: dontShowAgain
-            });
+            //add 注释here:取消右下角弹窗
+            // var modal = UI.cornerPopup(text, actions, '', {
+            //     big: true,
+            //     alt: true,
+            //     dontShowAgain: dontShowAgain
+            // });
 
             $(yes).click(function () {
                 modal.delete();
@@ -3089,7 +3092,7 @@ define([
             return;
         }
 
-        var modal = UI.cornerPopup(text, actions, footer, {hidden: initialHide});
+        // var modal = UI.cornerPopup(text, actions, footer, {hidden: initialHide});//add 注释here:取消右下角弹窗
 
         // Once the store pad popup is created, put the crowdfunding one in the queue
         UIElements.displayCrowdfunding(common);

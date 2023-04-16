@@ -36,15 +36,16 @@ define([
 
     return function () {
         var icons = [
-                [ 'sheet', Msg.type.sheet],
-                [ 'doc', Msg.type.doc],
-                [ 'presentation', Msg.type.presentation],
-                [ 'pad', Msg.type.pad],
-                [ 'kanban', Msg.type.kanban],
+                //lkj add 注释 here
+                // [ 'sheet', Msg.type.sheet],
+                // [ 'doc', Msg.type.doc],
+                // [ 'presentation', Msg.type.presentation],
+                // [ 'pad', Msg.type.pad],
+                // [ 'kanban', Msg.type.kanban],
                 [ 'code', Msg.type.code],
-                [ 'form', Msg.type.form],
-                [ 'whiteboard', Msg.type.whiteboard],
-                [ 'slide', Msg.type.slide]
+                // [ 'form', Msg.type.form],
+                // [ 'whiteboard', Msg.type.whiteboard],
+                // [ 'slide', Msg.type.slide]
             ].filter(function (x) {
                 return isAvailableType(x[0]);
             })
@@ -127,7 +128,7 @@ define([
     will be displayed. Otherwise, the direct text will be included as HTML.
 */
         if (Pages.Instance.notice) {
-            console.log(Pages.Instance.notice);
+            console.log(Pages.Instance.notice);//compiling
             notice = h('div.alert.alert-info', Pages.setHTML(h('span'), Pages.Instance.notice));
         }
 
@@ -160,11 +161,11 @@ define([
             }
         };
 
-
+        //整体初始界面
         return [
             h('div#cp-main', [
-                Pages.infopageTopbar(),
-                notice,
+                Pages.infopageTopbar(),//顶框
+                notice,//
                 h('div.container.cp-container', [
                     h('div.row.cp-home-hero', [
                         h('div.cp-title.col-lg-6', [
@@ -174,17 +175,20 @@ define([
                                 alt: ''
                             }),
                             instanceTitle,
-                            Pages.setHTML(h('span.tag-line'), Pages.Instance.description),
+                            Pages.setHTML(h('span.tag-line'), "hhhhhhhhh"),//中文描述：“hhhhhh"
+                            // Pages.setHTML(h('span.tag-line'), Pages.Instance.description),
                             locationBlock,
-                            h('div.cp-instance-links', [
-                                termsLink,
-                                privacyLink,
-                                imprintLink,
-                                h('a', {href:"/contact.html"}, Msg.contact)
-                            ])
+                            
+                            //lkj 删除注释
+                            // h('div.cp-instance-links', [//联系
+                            //     termsLink,
+                            //     privacyLink,
+                            //     imprintLink,
+                            //     h('a', {href:"/contact.html"}, Msg.contact)
+                            // ])
                         ]),
                         h('div.cp-apps.col-lg-6', [
-                            h('div.cp-app-grid', [
+                            h('div.cp-app-grid', [//新文档部分
                                 h('span.cp-app-new', [
                                     h('i.fa.fa-plus'),
                                     Msg.fm_newFile
@@ -193,7 +197,7 @@ define([
                                     icons,
                                 ])
                             ]),
-                            h('div.cp-app-drive', [
+                            h('div.cp-app-drive', [//磁盘部分
                                 h('a.cp-drive-btn', {'href': '/drive/'}, [
                                     h('i.fa.fa-hdd-o', {'aria-hidden': 'true'}),
                                     Msg.team_cat_drive
@@ -203,7 +207,7 @@ define([
                         ])
                     ]),
                 ]),
-                Pages.infopageFooter(),
+                Pages.infopageFooter(),//底框
             ]),
         ];
     };
