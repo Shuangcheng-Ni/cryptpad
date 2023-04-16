@@ -77,6 +77,7 @@ define([
         'xml',
     ]);
 
+    // 创建主题切换按钮
     var mkThemeButton = function (framework) {
         var $theme = $(h('button.cp-toolbar-appmenu', [
             h('i.cptools.cptools-palette'),
@@ -93,6 +94,7 @@ define([
         framework._.toolbar.$bottomL.append($theme);
     };
 
+    // 创建按作者着色的按钮
     var mkCbaButton = function (framework, markers) {
         var $showAuthorColorsButton = framework._.sfCommon.createButton('', true, {
             text: Messages.cba_hide,
@@ -102,6 +104,7 @@ define([
         framework._.toolbar.$theme.append($showAuthorColorsButton);
         markers.setButton($showAuthorColorsButton);
     };
+    // 创建打印按钮
     var mkPrintButton = function (framework, $content, $print) {
         var $printButton = framework._.sfCommon.createButton('print', true);
         $printButton.click(function () {
@@ -112,6 +115,7 @@ define([
         });
         framework._.toolbar.$drawer.append($printButton);
     };
+    // 创建 Markdown 工具栏
     var mkMarkdownTb = function (editor, framework) {
         var $codeMirrorContainer = $('#cp-app-code-container');
         var markdownTb = framework._.sfCommon.createMarkdownToolbar(editor);
@@ -128,6 +132,7 @@ define([
             modeChange: modeChange
         };
     };
+    // 创建帮助菜单
     var mkHelpMenu = function (framework) {
         var $codeMirrorContainer = $('#cp-app-code-container');
         var helpMenu = framework._.sfCommon.createHelpMenu(['text', 'code']);
@@ -136,6 +141,7 @@ define([
         framework._.toolbar.$drawer.append(helpMenu.button);
     };
 
+    //previews:用于渲染不同格式（如Markdown、HTML、AsciiDoc）的预览功能
     var previews = {};
     previews['gfm'] = function (val, $div, common) {
         DiffMd.apply(DiffMd.render(val), $div, common);
@@ -170,20 +176,28 @@ define([
         });
     };
 
+    // 创建预览面板
+    // 编程编辑器中创建一个实时预览面板，用户可以通过点击预览按钮在编辑器和预览之间切换
     var mkPreviewPane = function (editor, CodeMirror, framework, isPresentMode) {
-        var $previewContainer = $('#cp-app-code-preview');
-        var $preview = $('#cp-app-code-preview-content');
-        var $editorContainer = $('#cp-app-code-editor');
-        var $codeMirrorContainer = $('#cp-app-code-container');
-        var $codeMirror = $('.CodeMirror');
+        var $previewContainer = $('#cp-app-code-preview');//定义一个 jQuery 对象 $previewContainer，表示预览区域的容器
+        var $preview = $('#cp-app-code-preview-content');//定义一个 jQuery 对象 $preview，表示预览区域的内容。
+        var $editorContainer = $('#cp-app-code-editor');//定义一个 jQuery 对象 $editorContainer，表示编辑器的容器。
+        var $codeMirrorContainer = $('#cp-app-code-container');//定义一个 jQuery 对象 $codeMirrorContainer，表示 CodeMirror 编辑器的容器。
+        var $codeMirror = $('.CodeMirror');//定义一个 jQuery 对象 $codeMirror，表示 CodeMirror 编辑器实例。
 
+        //使用 jQuery 的 appendTo 方法将一个带有类名 cp-app-code-preview-empty 的图像元素添加到预览容器 $previewContainer 中。
+        //图像的 src 属性指向 CryptPad 的灰色 logo。
         $('<img>', {
             src: '/customize/CryptPad_logo_grey.svg',
             alt: '',
             class: 'cp-app-code-preview-empty'
         }).appendTo($previewContainer);
 
-        var $previewButton = framework._.sfCommon.createButton('preview', true);
+        //使用 framework 对象的方法 createButton 创建一个名为 $previewButton 的预览按钮
+        var $previewButton = framework._.sfCommon.createButton('preview', true);//使用 framework 对象的方法 createButton 创建一个名为 $previewButton 的预览按钮
+        
+        //强制绘制预览。首先根据 CodeMirror.highlightMode 获取对应的预览函数，如果没有找到对应的预览函数则直接返回。
+        //然后，根据编辑器的内容是否为空，显示或隐藏预览容器，并调用预览函数渲染预览内容。
         var forceDrawPreview = function () {
             var f = previews[CodeMirror.highlightMode];
             if (!f) { return; }
@@ -196,23 +210,35 @@ define([
                 f(editor.getValue(), $preview, framework._.sfCommon);
             } catch (e) { console.error(e); }
         };
+
+        //定义一个名为 drawPreview 的函数，使用 Util.throttle 限制函数的调用频率。
+        //如果没有找到对应的预览函数或预览按钮没有被激活，则直接返回。否则，调用 forceDrawPreview 函数。
         var drawPreview = Util.throttle(function () {
             if (!previews[CodeMirror.highlightMode]) { return; }
             if (!$previewButton.is('.cp-toolbar-button-active')) { return; }
             forceDrawPreview();
         }, 400);
 
+        //为预览按钮 $previewButton 添加点击事件处理器。在处理器中，首先使用 setTimeout 设置预览的延时，然后根据 CodeMirror.highlightMode 和预览容器的可见性切换预览容器的显示状态。
+        //接着，根据预览容器的可见性，调整 CodeMirror 编辑器的容器类名以控制布局，并更新预览按钮的激活状态。
+        // 最后，使用 framework._.sfCommon.setPadAttribute 方法设置预览模式属性。
         var previewTo;
         $previewButton.click(function () {
             clearTimeout(previewTo);
-            $codeMirror.addClass('transition');
+            $codeMirror.addClass('transition');//为 $codeMirror 添加 transition 类，使其在预览切换时产生过渡动画效果。
             previewTo = setTimeout(function () {
                 $codeMirror.removeClass('transition');
-            }, 500);
+            }, 500);//在延时结束时，移除 $codeMirror 的 transition 类,设置延时为 500 毫秒。
             if (!previews[CodeMirror.highlightMode]) {
                 $previewContainer.show();
             }
-            $previewContainer.toggle();
+            $previewContainer.toggle();//切换预览容器 $previewContainer 的可见状态
+
+            //根据预览容器的可见状态执行以下操作：
+
+            //如果预览容器可见，调用 forceDrawPreview 函数强制绘制预览，
+            // 移除 $codeMirrorContainer 的 cp-app-code-fullpage 类，使其呈现分屏效果，
+            // 并为预览按钮 $previewButton 添加激活状态。使用 framework._.sfCommon.setPadAttribute 方法将预览模式属性设置为 true。
             if ($previewContainer.is(':visible')) {
                 forceDrawPreview();
                 $codeMirrorContainer.removeClass('cp-app-code-fullpage');
@@ -220,7 +246,10 @@ define([
                 framework._.sfCommon.setPadAttribute('previewMode', true, function (e) {
                     if (e) { return console.log(e); }
                 });
-            } else {
+            } 
+            //如果预览容器不可见，为 $codeMirrorContainer 添加 cp-app-code-fullpage 类使其全屏显示，移除预览按钮 $previewButton 的激活状态。
+            // 使用 framework._.sfCommon.setPadAttribute 方法将预览模式属性设置为 false。
+            else {
                 $codeMirrorContainer.addClass('cp-app-code-fullpage');
                 $previewButton.removeClass('cp-toolbar-button-active');
                 framework._.sfCommon.setPadAttribute('previewMode', false, function (e) {
@@ -344,6 +373,7 @@ define([
         };
     };
 
+    //创建按作者着色功能
     var mkColorByAuthor = function (framework, markers) {
         var common = framework._.sfCommon;
         var $cbaButton = framework._.sfCommon.createButton(null, true, {
@@ -420,16 +450,20 @@ define([
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    var andThen2 = function (editor, CodeMirror, framework, isPresentMode) {
+    var andThen2 = function (editor, CodeMirror, framework, isPresentMode) {//接收editor, CodeMirror, framework, isPresentMode参数
 
+        // 从framework中获取common和privateData对象
         var common = framework._.sfCommon;
         var privateData = common.getMetadataMgr().getPrivateData();
 
+        // 创建预览面板和markdown工具栏
         var previewPane = mkPreviewPane(editor, CodeMirror, framework, isPresentMode);
         var markdownTb = mkMarkdownTb(editor, framework);
 
+        // 创建主题切换按钮
         mkThemeButton(framework);
 
+        // 创建标记（markers）对象，用于处理光标和作者颜色等
         var markers = Markers.create({
             common: common,
             framework: framework,
@@ -437,24 +471,31 @@ define([
             devMode: privateData.devMode,
             editor: editor
         });
+        // 创建颜色选择器按钮
         mkCbaButton(framework, markers);
 
+        // 获取打印相关的DOM元素
         var $print = $('#cp-app-code-print');
         var $content = $('#cp-app-code-preview-content');
+        // 创建打印按钮
         mkPrintButton(framework, $content, $print);
 
+        // 如果不是嵌入模式，则创建帮助菜单
         if (!privateData.isEmbed) {
             mkHelpMenu(framework);
         }
 
+        // 创建一个模式更改事件
         var evModeChange = Util.mkEvent();
         evModeChange.reg(previewPane.modeChange);
         evModeChange.reg(markdownTb.modeChange);
 
-        CodeMirror.mkIndentSettings(framework._.cpNfInner.metadataMgr);
-        CodeMirror.init(framework.localChange, framework._.title, framework._.toolbar);
-        mkFilePicker(framework, editor, evModeChange);
+        
+        CodeMirror.mkIndentSettings(framework._.cpNfInner.metadataMgr);// 初始化CodeMirror的缩进设置
+        CodeMirror.init(framework.localChange, framework._.title, framework._.toolbar); // 初始化CodeMirror
+        mkFilePicker(framework, editor, evModeChange);// 创建文件选择器
 
+        // 如果编辑器不是只读模式，配置主题和语言
         if (!framework.isReadOnly()) {
             CodeMirror.configureTheme(common, function () {
                 CodeMirror.configureLanguage(common, null, evModeChange.fire);
@@ -463,20 +504,22 @@ define([
             CodeMirror.configureTheme(common);
         }
 
+        // 当内容更新时，执行以下操作
         framework.onContentUpdate(function (newContent) {
+            // 设置高亮模式
             var highlightMode = newContent.highlightMode;
             if (highlightMode && highlightMode !== CodeMirror.highlightMode) {
                 CodeMirror.setMode(highlightMode, evModeChange.fire);
             }
 
-            // Fix the markers offsets
+            // 修复标记偏移
             markers.checkMarks(newContent);
 
-            // Apply the text content
-            CodeMirror.contentUpdate(newContent);
+            // 更新编辑器内容
+            CodeMirror.contentUpdate(newContent);//lkj add 注释 here：用于修改界面以及内容更新
             previewPane.draw();
 
-            // Apply the markers
+            // 重绘预览面板
             markers.setMarks();
 
             framework.localChange();
@@ -592,13 +635,18 @@ define([
         }
     };
 
+    // 创建一个基于CodeMirror的代码编辑器，同时提供预览功能
+    // 1、创建一个Framework实例，
+    //2、初始化CodeMirror实例，
+    //3、根据当前是否处于演示模式来调用andThen2函数，实现相应的功能
     var main = function () {
         var CodeMirror;
         var editor;
         var framework;
 
-        nThen(function (waitFor) {
+        nThen(function (waitFor) {//处理异步任务
 
+            // 传入一些配置参数，如工具栏容器、内容容器等。同时在回调函数中将新创建的实例赋值给变量framework
             Framework.create({
                 toolbarContainer: '#cme_toolbox',
                 contentContainer: '#cp-app-code-editor',
@@ -617,6 +665,7 @@ define([
                 }
             }, waitFor(function (fw) { framework = fw; }));
 
+            // 插入一些新元素，包括textarea、预览容器和打印容器。
             $('#cp-app-code-editor').append([
                 h('div#cp-app-code-container', h('textarea#editor1', {name:'editor1'})),
                 h('div#cp-app-code-preview', [
@@ -628,12 +677,15 @@ define([
             nThen(function (waitFor) {
                 $(waitFor());
             }).nThen(function () {
+                // 创建一个CodeMirror实例，并将editor变量设置为新创建的CodeMirror实例的editor属性。
+                // 最后将#cp-app-code-container的样式设置为cp-app-code-fullpage。
                 CodeMirror = SFCodeMirror.create(null, CMeditor);
                 $('#cp-app-code-container').addClass('cp-app-code-fullpage');
                 editor = CodeMirror.editor;
             }).nThen(waitFor());
 
         }).nThen(function (/*waitFor*/) {
+            // 检查当前是否处于演示模式
             framework._.sfCommon.isPresentUrl(function (err, val) {
                 andThen2(editor, CodeMirror, framework, val);
             });

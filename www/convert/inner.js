@@ -30,6 +30,7 @@ define([
     X2T
     )
 {
+    //文件格式转换
     var APP = window.APP = {};
     var CURRENT_VERSION = X2T.CURRENT_VERSION;
 

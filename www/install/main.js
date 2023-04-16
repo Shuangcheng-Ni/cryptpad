@@ -15,6 +15,9 @@ define([
 
     'css!/bower_components/components-font-awesome/css/font-awesome.min.css',
 ], function ($, Login, Cryptpad, /*Test,*/ Cred, UI, Util, Realtime, Constants, Feedback, LocalStore, h, Pages, Rpc) {
+    // 该模块的作用是提供注册页面的交互逻辑。当页面加载完成后，会检查用户是否已登录，如果已登录，则重定向到驱动器页面。
+    // 然后，该模块会获取用户在页面上输入的用户名、密码和安装令牌等信息，并进行基本的校验，例如检查密码是否太短、两次输入的密码是否一致，是否同意使用条款等。
+    // 最后，当用户点击注册按钮时，将使用提供的用户名和密码进行注册，并在注册成功后重定向到驱动器页面。
     if (window.top !== window) { return; }
     var Messages = Cryptpad.Messages;
     $(function () {

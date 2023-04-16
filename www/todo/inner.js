@@ -33,9 +33,11 @@ define([
     var common;
     var sFrameChan;
     nThen(function (waitFor) {
+        // 添加加载屏幕
         $(waitFor(UI.addLoadingScreen));
         SFCommon.create(waitFor(function (c) { APP.common = common = c; }));
     }).nThen(function (waitFor) {
+        // 获取 SFrame 通道
         sFrameChan = common.getSframeChannel();
         sFrameChan.onReady(waitFor());
     }).nThen(function (/*waitFor*/) {
@@ -60,6 +62,7 @@ define([
                 }
             });
 
+            // 删除任务函数
             var deleteTask = function(id) {
                 todo.remove(id);
 
@@ -74,6 +77,7 @@ define([
             };
 
             // TODO make this actually work, and scroll to bottom...
+            // 滚动函数
             var scrollTo = function (t) {
                 $list.animate({
                     scrollTop: t,
@@ -81,6 +85,7 @@ define([
             };
             scrollTo = scrollTo;
 
+            // 创建复选框函数
             var makeCheckbox = function (id, cb) {
                 var entry = APP.lm.proxy.data[id];
                 if (!entry || typeof(entry) !== 'object') {
@@ -108,6 +113,7 @@ define([
                 });
             };
 
+            // 添加任务 UI 函数
             var addTaskUI = function (el, animate) {
                 if (!el) { return; }
                 var $taskDiv = $('<div>', {

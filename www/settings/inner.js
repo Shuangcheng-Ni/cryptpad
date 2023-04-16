@@ -39,14 +39,17 @@ define([
     Feedback,
     Constants
 ) {
+    //引用window.saveAs和window.APP全局变量
     var saveAs = window.saveAs;
     var APP = window.APP = {};
 
+    // 初始化其他变量
     var common;
     var metadataMgr;
     var privateData;
     var sframeChan;
 
+    // 定义设置分类，如账户、安全、样式等
     var categories = {
         'account': [ // Msg.settings_cat_account
             'cp-settings-own-drive',
@@ -111,6 +114,7 @@ define([
         }
     };
 
+    // 如果禁用了某些设置选项，从分类中删除它们
     if (AppConfig.disableFeedback) {
         var feedbackIdx = categories.account.indexOf('cp-settings-userfeedback');
         categories.account.splice(feedbackIdx, 1);
@@ -123,8 +127,10 @@ define([
         delete categories.subscription;
     }
 
+    // 创建一个对象，用于存储创建各种设置块的函数
     var create = {};
 
+    // 定义一个特殊的提示处理器，用于处理需要特殊渲染的提示
     var SPECIAL_HINTS_HANDLER = {
         safeLinks: function() {
             return $('<span>', { 'class': 'cp-sidebarlayout-description' })
@@ -132,11 +138,13 @@ define([
         },
     };
 
+    // 定义一个默认的提示处理器，用于处理大多数设置块的提示
     var DEFAULT_HINT_HANDLER = function(safeKey) {
         return $('<span>', { 'class': 'cp-sidebarlayout-description' })
             .text(Messages['settings_' + safeKey + 'Hint'] || 'Coming soon...');
     };
 
+    // 定义一个函数，用于创建设置块
     var makeBlock = function(key, getter, full) {
         var safeKey = key.replace(/-([a-z])/g, function(g) { return g[1].toUpperCase(); });
 
@@ -168,6 +176,7 @@ define([
 
     // Account settings
 
+    // 显示用户的账户名和公钥
     create['info-block'] = function() {
         var $div = $('<div>', { 'class': 'cp-settings-info-block' });
 
@@ -194,6 +203,7 @@ define([
     };
 
     // Create the block containing the display name field
+    // 允许用户更改其在CryptPad中显示的名称
     create['displayname'] = function() {
         var $div = $('<div>', { 'class': 'cp-settings-displayname cp-sidebarlayout-element' });
         $('<label>', { 'for': 'cp-settings-displayname' }).text(Messages.user_displayName).appendTo($div);
@@ -238,6 +248,7 @@ define([
         return $div;
     };
 
+    // 允许用户选择CryptPad的显示语言
     create['language-selector'] = function() {
         var $div = $('<div>', { 'class': 'cp-settings-language-selector cp-sidebarlayout-element' });
         $('<label>').text(Messages.language).appendTo($div);
@@ -246,6 +257,7 @@ define([
         return $div;
     };
 
+    // 允许用户在所有设备上注销其CryptPad账户
     create['logout-everywhere'] = function() {
         if (!common.isLoggedIn()) { return; }
         var $div = $('<div>', { 'class': 'cp-settings-logout-everywhere cp-sidebarlayout-element' });
@@ -280,6 +292,8 @@ define([
         return $div;
     };
 
+    // 控制CryptPad在关闭之前自动保存文档的策略。
+    //这里的代码创建了一个带有描述和单选按钮的div，并在用户更改设置时更新相关属性。
     create['autostore'] = function() {
         var $div = $('<div>', { 'class': 'cp-settings-autostore cp-sidebarlayout-element' });
 
@@ -335,6 +349,8 @@ define([
         return $div;
     };
 
+    // 允许用户启用或禁用发送用户反馈。
+    //这里的代码创建了一个带有描述和复选框的div，并在用户更改设置时更新相关属性。
     create['userfeedback'] = function() {
         var $div = $('<div>', { 'class': 'cp-settings-userfeedback cp-sidebarlayout-element' });
 
@@ -372,6 +388,8 @@ define([
         return $div;
     };
 
+    // 一个用于启用/禁用安全链接缓存的复选框以及一个用于清除缓存的按钮。
+    // 在这里，用户可以更改缓存设置并清除浏览器缓存。
     makeBlock('cache', function (cb) { // Msg.settings_cacheHint, .settings_cacheTitle
         var store = window.cryptpadStore;
 
@@ -420,6 +438,8 @@ define([
         ]);
     }, true);
 
+    // 允许用户选择CryptPad应用程序的颜色主题。这个设置块包含了一组单选按钮，用于选择默认、明亮或黑暗主题。
+    // 用户选择新主题后，应用程序将刷新并应用新主题。
     makeBlock('colortheme', function (cb) { // Msg.settings_colorthemeHint .settings_colorthemeTitle
         var theme = window.cryptpadStore.store['colortheme'] || 'default';
         var os = window.cryptpadStore.store['colortheme_default'] || 'light';
@@ -477,6 +497,8 @@ define([
         });
     }, true);
 
+    // 允许已登录用户删除他们的CryptPad帐户。这个设置块包含了一个输入框用于输入当前密码以及一个删除按钮。
+    // 在删除过程中，代码会检查用户是否有订阅并警告他们取消订阅。如果用户确认删除，代码将发送请求以删除帐户并在完成后将用户重定向到首页。
     makeBlock('delete', function(cb) { // Msg.settings_deleteHint, .settings_deleteTitle
         if (!common.isLoggedIn()) { return cb(false); }
 
@@ -565,6 +587,7 @@ define([
         cb(form);
     }, true);
 
+    // 创建一个用于更改密码的界面
     create['change-password'] = function() {
         if (!common.isLoggedIn()) { return; }
 
@@ -577,6 +600,7 @@ define([
 
         // var publicKey = privateData.edPublic;
 
+        // 创建一个表单，用于输入当前密码、新密码和新密码确认
         var form = h('div', [
             UI.passwordInput({
                 id: 'cp-settings-change-password-current',
@@ -597,6 +621,7 @@ define([
 
         $(form).appendTo($div);
 
+        // 更新密码的函数
         var updateBlock = function(data, cb) {
             sframeChan.query('Q_CHANGE_USER_PASSWORD', data, function(err, obj) {
                 if (err || obj.error) { return void cb({ error: err || obj.error }); }
@@ -604,12 +629,13 @@ define([
             });
         };
 
+        // 更改密码表单提交时执行的操作
         var todo = function() {
             var oldPassword = $(form).find('#cp-settings-change-password-current').val();
             var newPassword = $(form).find('#cp-settings-change-password-new').val();
             var newPasswordConfirm = $(form).find('#cp-settings-change-password-new2').val();
 
-            /* basic validation */
+             // 基本验证
             if (!Cred.isLongEnoughPassword(newPassword)) {
                 var warning = Messages._getKey('register_passwordTooShort', [
                     Cred.MINIMUM_PASSWORD_LENGTH
@@ -626,6 +652,7 @@ define([
                 return void UI.alert(Messages.settings_changePasswordNewPasswordSameAsOld);
             }
 
+            // 确认对话框
             UI.confirm(Messages.settings_changePasswordConfirm,
                 function(yes) {
                     if (!yes) { return; }
@@ -640,7 +667,7 @@ define([
                     }, function(obj) {
                         UI.removeLoadingScreen();
                         if (obj && obj.error) {
-                            // TODO more specific error message?
+                            // 更改密码出错时的提示
                             UI.alert(Messages.settings_changePasswordError);
                         }
                     });
@@ -655,9 +682,11 @@ define([
                 });
         };
 
+        // 当点击表单按钮时，执行 todo 函数
         $(form).find('button').click(function() {
             todo();
         });
+         // 当按下 Enter 键时，执行 todo 函数
         $(form).find('input').keydown(function(e) {
             // Save on Enter
             if (e.which === 13) {
@@ -670,6 +699,7 @@ define([
         return $div;
     };
 
+    // 创建一个用于处理用户驱动器所有权的块
     makeBlock('own-drive', function(cb, $div) { // Msg.settings_ownDriveHint, .settings_ownDriveTitle
         if (privateData.isDriveOwned || !common.isLoggedIn()) {
             return void cb(false);
@@ -709,9 +739,11 @@ define([
             });
         };
 
+        // 当点击表单按钮时，执行 todo 函数
         $form.find('button').click(function() {
             todo();
         });
+        // 当按下 Enter 键时，执行 todo 函数
         $form.find('input').keydown(function(e) {
             // Save on Enter
             if (e.which === 13) {
@@ -725,6 +757,7 @@ define([
         cb(form);
     }, true);
 
+    // 创建一个用于设置媒体标签尺寸的块
     makeBlock('mediatag-size', function(cb) { // Msg.settings_mediatagSizeHint, .settings_mediatagSizeTitle
         var $inputBlock = $('<div>', {
             'class': 'cp-sidebarlayout-input-block',
@@ -739,6 +772,7 @@ define([
 
         var oldVal;
 
+        // 保存输入的媒体标签尺寸值
         var todo = function () {
             var val = parseInt($input.val());
             if (typeof(val) !== 'number' || isNaN(val)) { return UI.warn(Messages.error); }
@@ -779,15 +813,17 @@ define([
 
     // Security
 
+    // 安全设置
     makeBlock('safe-links', function(cb) { // Msg.settings_safeLinksTitle
 
+        // 创建一个复选框，用于启用或禁用安全链接
         var $cbox = $(UI.createCheckbox('cp-settings-safe-links',
             Messages.settings_safeLinksCheckbox,
             false, { label: { class: 'noTitle' } }));
 
         var spinner = UI.makeSpinner($cbox);
 
-        // Checkbox: "Enable safe links"
+        // 当复选框状态改变时，更新安全链接设置
         var $checkbox = $cbox.find('input').on('change', function() {
             spinner.spin();
             var val = !$checkbox.is(':checked');
@@ -796,6 +832,7 @@ define([
             });
         });
 
+        // 获取安全链接当前设置
         common.getAttribute(['security', 'unsafeLinks'], function(e, val) {
             if (e) { return void console.error(e); }
             if (val === false) {
@@ -807,16 +844,19 @@ define([
     }, true);
 
     // Drive settings
-
+        // 驱动器设置部分
     create['drive-duplicate'] = function() {
         if (!common.isLoggedIn()) { return; }
+        // 创建一个驱动器设置部分的元素
         var $div = $('<div>', {
             'class': 'cp-settings-drive-duplicate cp-sidebarlayout-element'
         });
+        // 添加标题和描述
         $('<label>').text(Messages.settings_driveDuplicateTitle).appendTo($div);
         $('<span>', { 'class': 'cp-sidebarlayout-description' })
             .text(Messages.settings_driveDuplicateHint).appendTo($div);
 
+        // 创建复选框，用于隐藏驱动器中的重复文件
         var $ok = $('<span>', { 'class': 'fa fa-check', title: Messages.saved });
         var $spinner = $('<span>', { 'class': 'fa fa-spinner fa-pulse' });
 
@@ -834,6 +874,7 @@ define([
         });
         $cbox.appendTo($div);
 
+        // 获取当前设置，设置复选框状态
         $ok.hide().appendTo($cbox);
         $spinner.hide().appendTo($cbox);
 
@@ -846,6 +887,7 @@ define([
         return $div;
     };
 
+    //重定向设置
     create['redirect'] = function () {
         if (!common.isLoggedIn()) { return; }
         var $div = $('<div>', { 'class': 'cp-settings-redirect cp-sidebarlayout-element' });
@@ -886,6 +928,7 @@ define([
         return $div;
     };
 
+    // 重置提示
     create['resettips'] = function() {
         var $div = $('<div>', { 'class': 'cp-settings-resettips cp-sidebarlayout-element' });
         $('<label>').text(Messages.settings_resetTips).appendTo($div);
@@ -907,6 +950,7 @@ define([
         return $div;
     };
 
+    //缩略图设置
     create['thumbnails'] = function() {
         var $div = $('<div>', { 'class': 'cp-settings-thumbnails cp-sidebarlayout-element' });
         $('<label>').text(Messages.settings_thumbnails).appendTo($div);
@@ -956,7 +1000,7 @@ define([
         return $div;
     };
 
-
+    //驱动器备份
     create['drive-backup'] = function() {
         var $div = $('<div>', { 'class': 'cp-settings-drive-backup cp-sidebarlayout-element' });
 
@@ -1043,16 +1087,23 @@ define([
         return $div;
     };
 
+    // 创建“导入本地文件”的设置项
     create['drive-import-local'] = function() {
         if (!common.isLoggedIn()) { return; }
+
+        // 创建一个包含标题和描述的div容器。
         var $div = $('<div>', { 'class': 'cp-settings-drive-import-local cp-sidebarlayout-element' });
         $('<label>').text(Messages.settings_import).appendTo($div);
         $('<span>', { 'class': 'cp-sidebarlayout-description' })
             .text(Messages.settings_importTitle).appendTo($div);
+
+        // 添加一个导入按钮，点击时弹出确认框，确认后进行导入操作。
         var $button = $('<button>', {
             'id': 'cp-settings-import-local-pads',
             'class': 'btn btn-primary'
         }).text(Messages.settings_import).appendTo($div);
+
+        // 添加一个“操作成功”图标和一个“等待”图标，它们在不同状态下切换显示。
         var $ok = $('<span>', { 'class': 'fa fa-check', title: Messages.saved }).hide().appendTo($div);
         var $spinner = $('<span>', { 'class': 'fa fa-spinner fa-pulse' }).hide().appendTo($div);
 
@@ -1072,6 +1123,10 @@ define([
         return $div;
     };
 
+    // 重绘“裁剪历史记录”设置项的内容
+    // 1、创建一个包含当前大小、裁剪按钮、“操作成功”图标和“等待”图标的div容器。
+    // 2、获取历史记录的大小，并判断是否需要显示裁剪按钮。
+    // 3、添加裁剪按钮的点击事件，执行裁剪操作。
     var redrawTrimHistory = function(cb, $div) {
         var spinner = UI.makeSpinner();
         var button = h('button.btn.btn-danger-alt', {
@@ -1142,6 +1197,8 @@ define([
         $div.find('#cp-settings-trim-container').remove();
         cb(content);
     };
+
+    // 创建“裁剪历史记录”设置项
     makeBlock('trim-history', function(cb, $div) { // Msg.settings_trimHistoryHint, .settings_trimHistoryTitle
         if (!common.isLoggedIn()) { return void cb(false); }
         redrawTrimHistory(cb, $div);
@@ -1175,7 +1232,9 @@ define([
 
     // Cursor settings
 
+    // 创建“光标颜色”设置项
     create['cursor-color'] = function() {
+        // 包含标题和描述的div容器。
         var $div = $('<div>', {
             'class': 'cp-settings-cursor-color cp-sidebarlayout-element'
         });
@@ -1185,7 +1244,9 @@ define([
 
         var $inputBlock = $('<div>').appendTo($div);
 
+        // 添加一个颜色选择器，当颜色发生变化时，设置新的颜色值。
         var $colorPicker = $("<div>", { class: "cp-settings-cursor-color-picker" });
+        // 添加一个“操作成功”图标和一个“等待”图标，它们在不同状态下切换显示。
         var $ok = $('<span>', { 'class': 'fa fa-check', title: Messages.saved });
         var $spinner = $('<span>', { 'class': 'fa fa-spinner fa-pulse' });
 
@@ -1229,7 +1290,9 @@ define([
         return $div;
     };
 
+    // 创建“分享光标”设置项
     create['cursor-share'] = function() {
+        // 创建一个包含标题和描述的div容器。
         var $div = $('<div>', {
             'class': 'cp-settings-cursor-share cp-sidebarlayout-element'
         });
@@ -1237,9 +1300,11 @@ define([
         $('<span>', { 'class': 'cp-sidebarlayout-description' })
             .text(Messages.settings_cursorShareHint).appendTo($div);
 
+        // 添加一个“操作成功”图标和一个“等待”图标，它们在不同状态下切换显示。
         var $ok = $('<span>', { 'class': 'fa fa-check', title: Messages.saved });
         var $spinner = $('<span>', { 'class': 'fa fa-spinner fa-pulse' });
 
+        // 添加一个复选框，点击时切换分享光标的状态。
         var $cbox = $(UI.createCheckbox('cp-settings-cursor-share',
             Messages.settings_cursorShareLabel,
             false, { label: { class: 'noTitle' } }));
@@ -1266,6 +1331,7 @@ define([
         return $div;
     };
 
+    // 创建“显示光标”设置项（处于BETA阶段）
     create['cursor-show'] = function() {
         var $div = $('<div>', {
             'class': 'cp-settings-cursor-show cp-sidebarlayout-element'
@@ -1443,26 +1509,33 @@ define([
 
     // Code settings
 
+    // 创建代码缩进单位设置界面元素
     create['code-indent-unit'] = function() {
         var $div = $('<div>', {
             'class': 'cp-settings-code-indent-unit cp-sidebarlayout-element'
         });
+        // 将设置文本附加到 div 元素
         $('<label>').text(Messages.settings_codeIndentation).appendTo($div);
 
+        // 创建输入框并添加到 div 元素中
         var $inputBlock = $('<div>', {
             'class': 'cp-sidebarlayout-input',
         }).appendTo($div);
 
+        // 创建一个数字类型的 input 元素，设置最小值为 1，最大值为 8，监听 change 事件
         var $input = $('<input>', {
             'min': 1,
             'max': 8,
             type: 'number',
         }).on('change', function() {
+            // 当输入值发生改变时，获取输入值并将其转为整数
             var val = parseInt($input.val());
             if (typeof(val) !== 'number') { return; }
+            // 设置缩进单位属性
             common.setAttribute(['codemirror', 'indentUnit'], val);
         }).appendTo($inputBlock);
 
+        // 获取缩进单位属性，并将其设置为 input 元素的值
         common.getAttribute(['codemirror', 'indentUnit'], function(e, val) {
             if (e) { return void console.error(e); }
             if (typeof(val) !== 'number') {
@@ -1474,6 +1547,7 @@ define([
         return $div;
     };
 
+    // 创建代码缩进类型设置界面元素
     create['code-indent-type'] = function() {
         var key = 'indentWithTabs';
 
@@ -1487,8 +1561,9 @@ define([
             }).css('flex-flow', 'column')
             .appendTo($div);
 
-
+        // 创建复选框并将其附加到 div 元素
         var $cbox = $(UI.createCheckbox('cp-settings-codeindent'));
+        // 为复选框添加 change 事件监听
         var $checkbox = $cbox.find('input').on('change', function() {
             var val = $checkbox.is(':checked');
             if (typeof(val) !== 'boolean') { return; }
@@ -1507,6 +1582,7 @@ define([
         return $div;
     };
 
+    // 创建代码括号匹配设置界面元素
     create['code-brackets'] = function() {
         var key = 'brackets';
 
@@ -1529,6 +1605,7 @@ define([
         });
         $cbox.appendTo($inputBlock);
 
+        // 获取括号匹配属性，并将其设置为复选框的选中状态
         common.getAttribute(['codemirror', key], function(e, val) {
             if (e) { return void console.error(e); }
             $checkbox[0].checked = typeof(val) !== "boolean" || val;
@@ -1536,6 +1613,7 @@ define([
         return $div;
     };
 
+    // 创建代码字体大小设置界面元素
     create['code-font-size'] = function() {
         var key = 'fontSize';
 
@@ -1569,6 +1647,7 @@ define([
         return $div;
     };
 
+    //代码拼写检查
     create['code-spellcheck'] = function() {
         var $div = $('<div>', {
             'class': 'cp-settings-code-spellcheck cp-sidebarlayout-element'
@@ -1587,6 +1666,7 @@ define([
             $spinner.show();
             $ok.hide();
             var val = $checkbox.is(':checked');
+            // 设置拼写检查属性，并在完成后显示确认图标，隐藏加载图标
             common.setAttribute(['codemirror', 'spellcheck'], val, function() {
                 $spinner.hide();
                 $ok.show();
@@ -1594,9 +1674,11 @@ define([
         });
         $cbox.appendTo($div);
 
+        // 将确认图标和加载图标附加到复选框
         $ok.hide().appendTo($cbox);
         $spinner.hide().appendTo($cbox);
 
+        // 获取拼写检查属性，并将其设置为复选框的选中状态
         common.getAttribute(['codemirror', 'spellcheck'], function(e, val) {
             if (e) { return void console.error(e); }
             if (val) {
@@ -1607,6 +1689,7 @@ define([
     };
 
 
+    // 看板标签
     makeBlock('kanban-tags', function(cb) { // Msg.settings_kanbanTagsHint, .settings_kanbanTagsTitle
 
         var opt1 = UI.createRadio('cp-settings-kanban-tags', 'cp-settings-kanban-tags-and',
@@ -1647,13 +1730,16 @@ define([
         cb($d);
     }, true);
 
+    // 创建一个“通知日历”设置项
     makeBlock('notif-calendar', function(cb) { // Msg.settings_notifCalendarHint, .settings_notifCalendarTitle
 
+        // 创建一个复选框（checkbox）用于显示或隐藏日历通知
         var $cbox = $(UI.createCheckbox('cp-settings-cache',
             Messages.settings_notifCalendarCheckbox,
             false, { label: { class: 'noTitle' } }));
         var spinner = UI.makeSpinner($cbox);
 
+        // 当复选框的状态改变时，更新对应的设置值
         var $checkbox = $cbox.find('input').on('change', function() {
             spinner.spin();
             var val = !$checkbox.is(':checked');
@@ -1670,6 +1756,7 @@ define([
             });
         });
 
+        // 根据存储的设置值初始化复选框状态
         common.getAttribute(['general', 'calendar', 'hideNotif'], function(e, val) {
             if (e) { return void console.error(e); }
             if (!val) {
@@ -1680,8 +1767,9 @@ define([
         cb($cbox[0]);
     }, true);
 
-    // Settings app
+    // Settings app（设置应用程序部分）
 
+    // 创建使用情况按钮
     var createUsageButton = function() {
         common.createUsageBar(null, function(err, $bar) {
             if (err) { return void console.error(err); }
@@ -1689,9 +1777,11 @@ define([
         }, true);
     };
 
+    // 隐藏所有设置类别
     var hideCategories = function() {
         APP.$rightside.find('> div').hide();
     };
+    // 显示特定设置类别
     var showCategories = function(cat) {
         hideCategories();
         cat.forEach(function(c) {
@@ -1699,6 +1789,7 @@ define([
         });
     };
 
+    // 定义侧边栏图标
     var SIDEBAR_ICONS = {
         account: 'fa fa-user-o',
         drive: 'fa fa-hdd-o',
@@ -1712,7 +1803,9 @@ define([
         notifications: 'fa fa-bell'
     };
 
+    // 设置类别的显示名称
     Messages.settings_cat_notifications = Messages.notificationsPage;
+    // 创建设置页面的左侧部分（包含设置类别列表）
     var createLeftside = function() {
         var $categories = $('<div>', { 'class': 'cp-sidebarlayout-categories' })
             .appendTo(APP.$leftside);
@@ -1758,6 +1851,7 @@ define([
 
 
 
+    // 初始化代码
     nThen(function(waitFor) {
         $(waitFor(UI.addLoadingScreen));
         SFCommon.create(waitFor(function(c) { APP.common = common = c; }));
@@ -1808,10 +1902,10 @@ define([
         //obj.proxy.on('remove', [], refresh);
         //Cryptpad.onDisplayNameChanged(refresh);
 
-        createLeftside();
-        createUsageButton();
+        createLeftside();// 生成左侧设置类别列表
+        createUsageButton();// 创建使用情况按钮
 
-        common.setTabTitle(Messages.settings_title);
-        UI.removeLoadingScreen();
+        common.setTabTitle(Messages.settings_title);// 设置标签页标题
+        UI.removeLoadingScreen();// 移除加载屏幕
     });
 });

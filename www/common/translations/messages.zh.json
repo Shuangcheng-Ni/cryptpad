@@ -2,7 +2,7 @@
     "main_title": "CryptPad: 零知識, 即時協作編寫",
     "type": {
         "pad": "富文本",
-        "code": "編碼",
+        "code": "代码",
         "poll": "投票",
         "slide": "Markdown 幻灯片",
         "drive": "磁碟",

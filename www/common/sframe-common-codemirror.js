@@ -1,4 +1,4 @@
-define([
+define([//定义模块及其依赖
     'jquery',
     '/common/modes.js',
     '/common/themes.js',
@@ -12,6 +12,7 @@ define([
 ], function ($, Modes, Themes, Messages, UIElements, MT, Hash, Util, TextCursor, ChainPad) {
     var module = {};
 
+    //将光标位置转换为文本位置
      var cursorToPos = module.cursorToPos = function(cursor, oldText) {
         var cLine = cursor.line;
         var cCh = cursor.ch;
@@ -28,6 +29,7 @@ define([
         return pos;
     };
 
+    // 将文本位置转换为光标位置
     var posToCursor = module.posToCursor = function(position, newText) {
         var cursor = {
             line: 0,
@@ -39,17 +41,21 @@ define([
         return cursor;
     };
 
+    //获取内容扩展名
     module.getContentExtension = function (mode) {
         var ext = Modes.extensionOf(mode);
         return ext !== undefined ? ext : '.txt';
     };
+    //文件导出
     module.fileExporter = function (content) {
         return new Blob([ content ], { type: 'text/plain;charset=utf-8' });
     };
+    
+    // 远程文档更新时设置编辑器的内容并保持光标位置!!!!
     module.setValueAndCursor = function (editor, oldDoc, remoteDoc) {
         editor._noCursorUpdate = true;
         var scroll = editor.getScrollInfo();
-        //get old cursor here
+        //获取旧光标位置
         var oldCursor = {};
         oldCursor.selectionStart = cursorToPos(editor.getCursor('from'), oldDoc);
         oldCursor.selectionEnd = cursorToPos(editor.getCursor('to'), oldDoc);
@@ -57,6 +63,7 @@ define([
         editor.setValue(remoteDoc);
         editor.save();
 
+        // 计算新光标位置
         var ops = ChainPad.Diff.diff(oldDoc, remoteDoc);
         var selects = ['selectionStart', 'selectionEnd'].map(function (attr) {
             return TextCursor.transformCursor(oldCursor[attr], ops);
@@ -77,6 +84,7 @@ define([
         editor.scrollTo(scroll.left, scroll.top);
     };
 
+    // 处理图像粘贴
     module.handleImagePaste = function (editor) {
         // Don't paste file path in the users wants to paste a file
         editor.on('paste', function (editor, ev) {
@@ -92,6 +100,7 @@ define([
         });
     };
 
+    //获取文本的第一个有效标题
     module.getHeadingText = function (editor) {
         var lines = editor.getValue().split(/\n/);
 
@@ -140,6 +149,7 @@ define([
         return text.trim();
     };
 
+    //设置编辑器的缩进设置
     module.mkIndentSettings = function (editor, metadataMgr) {
         var setIndentation = function (units, useTabs, fontSize, spellcheck, brackets) {
             if (typeof(units) !== 'number') { return; }
@@ -206,6 +216,7 @@ define([
         updateIndentSettings();
     };
 
+    //创建并初始化 CodeMirror 编辑器
     module.create = function (defaultMode, CMeditor, textarea) {
         var exp = {};
 
@@ -227,6 +238,7 @@ define([
             $drawer = toolbar.$theme || $();
         };
 
+        // 初始化 CodeMirror 编辑器的配置选项
         var editor = exp.editor = CMeditor.fromTextArea($textarea[0], {
             allowDropFileTypes: [],
             lineNumbers: true,
@@ -266,8 +278,10 @@ define([
 
         module.handleImagePaste(editor);
 
+        //设置编辑器的语言模式
         var setMode = exp.setMode = function (mode, cb) {
             exp.highlightMode = mode;
+            // 设置编辑器的语言模式
             if (mode === 'markdown') { mode = 'gfm'; }
             if (/text\/x/.test(mode)) {
                 CMeditor.autoLoadMode(editor, 'clike');
@@ -304,6 +318,7 @@ define([
             if(cb) { cb(mode); }
         };
 
+        // 设置编辑器主题
         var setTheme = exp.setTheme = (function () {
             var path = '/common/theme/';
 
@@ -337,10 +352,12 @@ define([
             };
         }());
 
+        // 获取标题文本
         exp.getHeadingText = function () {
             return module.getHeadingText(editor);
         };
 
+        // 配置语言
         exp.configureLanguage = function (Common, cb, onModeChanged) {
             var options = [];
             Modes.list.forEach(function (l) {
@@ -386,6 +403,7 @@ define([
             if (cb) { cb(); }
         };
 
+        // 配置主题
         exp.configureTheme = function (Common, cb) {
             /*  Remember the user's last choice of theme using localStorage */
             var isDark = window.CryptPad_theme === "dark";
@@ -483,15 +501,18 @@ define([
             return { content: content, mode: mode };
         };
 
+        // 设置编辑器值和光标位置
         exp.setValueAndCursor = function (oldDoc, remoteDoc) {
             return module.setValueAndCursor(editor, oldDoc, remoteDoc);
         };
 
         /////
 
+        // 规范化文本内容
         var canonicalize = exp.canonicalize = function (t) { return t.replace(/\r\n/g, '\n'); };
 
 
+        // 在接收到新的远程文档内容时更新编辑器的内容 !!!
         exp.contentUpdate = function (newContent) {
             var oldDoc = canonicalize(editor.getValue());
             var remoteDoc = newContent.content;
@@ -502,15 +523,18 @@ define([
             exp.setValueAndCursor(oldDoc, remoteDoc);
         };
 
+        // 获取编辑器的当前内容!!!!
         exp.getContent = function () {
             editor.save();
             return { content: canonicalize(editor.getValue()) };
         };
 
+        // 创建缩进设置
         exp.mkIndentSettings = function (metadataMgr) {
             module.mkIndentSettings(editor, metadataMgr);
         };
 
+        //用于获取编辑器中当前光标的位置!!
         exp.getCursor = function () {
             var doc = canonicalize(editor.getValue());
             var cursor = {};
@@ -519,6 +543,7 @@ define([
             return cursor;
         };
 
+        // 创建并获取光标
         var makeCursor = function (id) {
             if (document.getElementById(id)) {
                 return document.getElementById(id);
@@ -528,16 +553,20 @@ define([
                 'class': 'cp-codemirror-cursor'
             })[0];
         };
+
+        // 创建提示信息
         var makeTippy = function (cursor) {
             return MT.getCursorAvatar(cursor);
         };
         var marks = {};
+        // 移除光标
         exp.removeCursors = function () {
             for (var id in marks) {
                 marks[id].clear();
                 delete marks[id];
             }
         };
+        // 设置光标
         exp.setRemoteCursor = function (data) {
             if (data.reset) {
                 return void exp.removeCursors();
