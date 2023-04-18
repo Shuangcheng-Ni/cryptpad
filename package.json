@@ -1,15 +1,11 @@
 {
-  "name": "cryptpad",
-  "description": "realtime collaborative visual editor with zero knowlege server",
-  "version": "5.2.1",
+  "name": "wendang",
+  "description": "realtime collaborative visual editor with compilers and AI plugin",
+  "version": "0.0.1",
   "license": "AGPL-3.0+",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xwiki-labs/cryptpad.git"
-  },
-  "funding": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/cryptpad"
+    "url": "git+https://github.com/soryxie/wendang.git"
   },
   "dependencies": {
     "@mcrowe/minibloom": "^0.2.0",

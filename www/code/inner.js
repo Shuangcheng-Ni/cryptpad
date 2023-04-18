@@ -60,8 +60,7 @@ define([
     Visible,
     TypingTest,
     Messages,
-    CMeditor)
-{
+    CMeditor) {
     window.CodeMirror = CMeditor;
 
     var MEDIA_TAG_MODES = Object.freeze([
@@ -176,6 +175,8 @@ define([
         });
     };
 
+
+
     // 创建预览面板
     // 编程编辑器中创建一个实时预览面板，用户可以通过点击预览按钮在编辑器和预览之间切换
     var mkPreviewPane = function (editor, CodeMirror, framework, isPresentMode) {
@@ -195,7 +196,7 @@ define([
 
         //使用 framework 对象的方法 createButton 创建一个名为 $previewButton 的预览按钮
         var $previewButton = framework._.sfCommon.createButton('preview', true);//使用 framework 对象的方法 createButton 创建一个名为 $previewButton 的预览按钮
-        
+
         //强制绘制预览。首先根据 CodeMirror.highlightMode 获取对应的预览函数，如果没有找到对应的预览函数则直接返回。
         //然后，根据编辑器的内容是否为空，显示或隐藏预览容器，并调用预览函数渲染预览内容。
         var forceDrawPreview = function () {
@@ -208,9 +209,17 @@ define([
                 }
                 $previewContainer.removeClass('cp-app-code-preview-isempty');
 
-                // f(String(text("Hello, world!")), $preview, framework._.sfCommon);//原代码
+                //f(String(text("Hello, world!")), $preview, framework._.sfCommon);//原代码
+
                 var $preview = $('#cp-app-code-preview-content');
-                $preview.text("Hello, world!");//lkj add here——写死右边的数据
+
+
+
+
+
+
+                //先改成左边的值
+                $preview.text(editor.getValue());
 
             } catch (e) { console.error(e); }
         };
@@ -220,13 +229,15 @@ define([
         var drawPreview = Util.throttle(function () {
             if (!previews[CodeMirror.highlightMode]) { return; }
             if (!$previewButton.is('.cp-toolbar-button-active')) { return; }
-            forceDrawPreview();
+            //forceDrawPreview();//暂时注释掉
         }, 400);
 
         //为预览按钮 $previewButton 添加点击事件处理器。在处理器中，首先使用 setTimeout 设置预览的延时，然后根据 CodeMirror.highlightMode 和预览容器的可见性切换预览容器的显示状态。
         //接着，根据预览容器的可见性，调整 CodeMirror 编辑器的容器类名以控制布局，并更新预览按钮的激活状态。
         // 最后，使用 framework._.sfCommon.setPadAttribute 方法设置预览模式属性。
         var previewTo;
+        //应该改这个1111111--------------------------------------------
+        //---------------------------------------------------------------------------------------------------
         $previewButton.click(function () {
             clearTimeout(previewTo);
             $codeMirror.addClass('transition');//为 $codeMirror 添加 transition 类，使其在预览切换时产生过渡动画效果。
@@ -236,30 +247,105 @@ define([
             if (!previews[CodeMirror.highlightMode]) {
                 $previewContainer.show();
             }
-            $previewContainer.toggle();//切换预览容器 $previewContainer 的可见状态
+            // $previewContainer.toggle();//切换预览容器 $previewContainer 的可见状态
 
-            //根据预览容器的可见状态执行以下操作：
+            // 根据预览容器的可见状态执行以下操作：
+            
+            // ------始终执行分支--nsc
 
-            //如果预览容器可见，调用 forceDrawPreview 函数强制绘制预览，
+            // 如果预览容器可见，调用 forceDrawPreview 函数强制绘制预览，
             // 移除 $codeMirrorContainer 的 cp-app-code-fullpage 类，使其呈现分屏效果，
             // 并为预览按钮 $previewButton 添加激活状态。使用 framework._.sfCommon.setPadAttribute 方法将预览模式属性设置为 true。
-            if ($previewContainer.is(':visible')) {
-                forceDrawPreview();
-                $codeMirrorContainer.removeClass('cp-app-code-fullpage');
-                $previewButton.addClass('cp-toolbar-button-active');
-                framework._.sfCommon.setPadAttribute('previewMode', true, function (e) {
-                    if (e) { return console.log(e); }
-                });
-            } 
+            // if ($previewContainer.is(':visible')) {
+
+            //-------------------新加新加ljy------------------------------------
+
+            console.log(editor.getValue());
+            var $preview = $('#cp-app-code-preview-content');
+            $preview.text('正在编译中！！！') // ------增加提示--nsc
+            var code = editor.getValue();
+
+            var data = {
+                source: code,
+                compiler: "g122",
+                options: {
+                    userArguments: "",
+                    executeParameters: {
+                        args: "",
+                        stdin: ""
+                    },
+                    compilerOptions: {
+                        executorRequest: true,
+                        skipAsm: true
+                    },
+                    filters: {
+                        execute: true
+                    },
+                    tools: [],
+                    libraries: []
+                },
+                lang: "c++",
+                files: [],
+                allowStoreCodeDebug: true
+            };
+            var url = "https://go.godbolt.org/api/compiler/g122/compile";
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    console.log("---abc---\n" + response.text());
+                    return response.text();
+                })
+                .then(payload => {//增加错误处理
+                    // 检查payload中是否包含"Standard err:"
+                    if (payload.includes("Standard err:")) {
+                        // 如果payload中有"Standard err:"，则输出错误信息
+                        // console.log("Compiler exited with result code -1");
+                        var output = payload.split("Standard err:\n")[1].trim();
+                        console.log(output);
+                        $preview.text(output);
+                    } else {
+                        // 从payload中提取需要的部分
+                        // var output = payload.split("Standard out:\n")[1].trim();
+                        var output = document.getElementsByClassName("card execution-stdout").text;
+                        console.log(output);
+                        // 将提取的输出输出到页面中
+                        //document.getElementById("output").textContent = output;
+                        $preview.text(output);
+                    }
+                })
+
+
+
+            //forceDrawPreview();//暂时注释掉
+
+            //-------------------新加新加ljy------------------------------------
+            $codeMirrorContainer.removeClass('cp-app-code-fullpage');
+            $previewButton.addClass('cp-toolbar-button-active');
+            framework._.sfCommon.setPadAttribute('previewMode', true, function (e) {
+                if (e) { return console.log(e); }
+            });
+
+
+
+
+            // }
+
+            // ------删除分支--nsc
+
             //如果预览容器不可见，为 $codeMirrorContainer 添加 cp-app-code-fullpage 类使其全屏显示，移除预览按钮 $previewButton 的激活状态。
             // 使用 framework._.sfCommon.setPadAttribute 方法将预览模式属性设置为 false。
-            else {
-                $codeMirrorContainer.addClass('cp-app-code-fullpage');
-                $previewButton.removeClass('cp-toolbar-button-active');
-                framework._.sfCommon.setPadAttribute('previewMode', false, function (e) {
-                    if (e) { return console.log(e); }
-                });
-            }
+            // else {
+            //     $codeMirrorContainer.addClass('cp-app-code-fullpage');
+            //     $previewButton.removeClass('cp-toolbar-button-active');
+            //     framework._.sfCommon.setPadAttribute('previewMode', false, function (e) {
+            //         if (e) { return console.log(e); }
+            //     });
+            // }
         });
 
         framework._.toolbar.$bottomM.append($previewButton);
@@ -275,7 +361,7 @@ define([
                     var privateData = framework._.cpNfInner.metadataMgr.getPrivateData();
                     href = privateData.origin + href;
                 } else if (/^#/.test(href)) {
-                    var target = document.getElementById('cp-md-0-'+href.slice(1));
+                    var target = document.getElementById('cp-md-0-' + href.slice(1));
                     if (target) { target.scrollIntoView(); }
                     return;
                 }
@@ -317,7 +403,7 @@ define([
                 'class': 'cp-splitter'
             }).appendTo($previewContainer);
 
-            $previewContainer.on('scroll', function() {
+            $previewContainer.on('scroll', function () {
                 splitter.css('top', $previewContainer.scrollTop() + 'px');
             });
 
@@ -433,7 +519,7 @@ define([
                 framework.setMediaTagEmbedder(function (mt, d) {
                     editor.focus();
                     var txt = $(mt)[0].outerHTML;
-                    if (editor.getMode().name === "asciidoc") {
+                    if (editor.getMode().name === "asciidoc") {
                         if (d.static) {
                             txt = d.href + `[${d.name}]`;
                         } else {
@@ -494,7 +580,7 @@ define([
         evModeChange.reg(previewPane.modeChange);
         evModeChange.reg(markdownTb.modeChange);
 
-        
+
         CodeMirror.mkIndentSettings(framework._.cpNfInner.metadataMgr);// 初始化CodeMirror的缩进设置
         CodeMirror.init(framework.localChange, framework._.title, framework._.toolbar); // 初始化CodeMirror
         mkFilePicker(framework, editor, evModeChange);// 创建文件选择器
@@ -600,7 +686,7 @@ define([
         });
 
         framework.onDefaultContentNeeded(function () {
-             editor.setValue('');
+            editor.setValue('');
         });
 
         framework.setFileExporter(CodeMirror.getContentExtension, CodeMirror.fileExporter);
@@ -622,7 +708,7 @@ define([
             };
         });
 
-        editor.on('change', function( cm, change ) {
+        editor.on('change', function (cm, change) {
             markers.localChange(change, framework.localChange);
         });
 
@@ -674,7 +760,7 @@ define([
 
             // 插入一些新元素，包括textarea、预览容器和打印容器。
             $('#cp-app-code-editor').append([
-                h('div#cp-app-code-container', h('textarea#editor1', {name:'editor1'})),
+                h('div#cp-app-code-container', h('textarea#editor1', { name: 'editor1' })),
                 h('div#cp-app-code-preview', [
                     h('div#cp-app-code-preview-content'),
                     h('div#cp-app-code-print')

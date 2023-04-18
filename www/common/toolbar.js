@@ -41,7 +41,7 @@ MessengerUI, Messages, Pages) {
     var USERLIST_CLS = Bar.constants.userlist = "cp-toolbar-users";
 
     // Top parts
-    var USER_CLS = Bar.constants.userAdmin = "cp-toolbar-user";
+    var USER_CLS = Bar.constants.userAdmin = "cp-toolbar-user";//add注释here,删除右上角两个用户按钮
     var SPINNER_CLS = Bar.constants.spinner = 'cp-toolbar-spinner';
     var LIMIT_CLS = Bar.constants.limit = 'cp-toolbar-limit';
     var TITLE_CLS = Bar.constants.title = "cp-toolbar-title";
@@ -50,10 +50,10 @@ MessengerUI, Messages, Pages) {
     var MAINTENANCE_CLS = Bar.constants.user = 'cp-toolbar-maintenance';
 
     // User admin menu
-    var USERADMIN_CLS = Bar.constants.user = 'cp-toolbar-user-dropdown';
-    var USERNAME_CLS = Bar.constants.username = 'cp-toolbar-user-name';
+    var USERADMIN_CLS = Bar.constants.user = 'cp-toolbar-user-dropdown';//add注释here,删除右上角两个用户按钮
+    var USERNAME_CLS = Bar.constants.username = 'cp-toolbar-user-name';//add注释here,删除右上角两个用户按钮
     /*var READONLY_CLS = */Bar.constants.readonly = 'cp-toolbar-readonly';
-    var USERBUTTON_CLS = Bar.constants.changeUsername = "cp-toolbar-user-rename";
+    var USERBUTTON_CLS = Bar.constants.changeUsername = "cp-toolbar-user-rename";//add注释here,删除右上角两个用户按钮
 
     // Create the toolbar element
 
@@ -91,9 +91,9 @@ MessengerUI, Messages, Pages) {
         
         //add 注释here:上方文档、主题、工具等
         var $bottom = $(h('div.'+BOTTOM_CLS, [
-            h('div.'+BOTTOM_LEFT_CLS),
+            // h('div.'+BOTTOM_LEFT_CLS),
             h('div.'+BOTTOM_MID_CLS),
-            h('div.'+BOTTOM_RIGHT_CLS)
+            // h('div.'+BOTTOM_RIGHT_CLS)
         ])).appendTo($toolbar);
         $toolbar.append(h('div.'+HISTORY_CLS));
         $toolbar.append(h('div.'+SNAPSHOTS_CLS));
@@ -1334,8 +1334,8 @@ MessengerUI, Messages, Pages) {
         tb['userlist'] = createUserList;
         tb['collapse'] = createCollapse;
         tb['chat'] = createChat;
-        tb['share'] = createShare;
-        tb['access'] = createAccess;
+        // tb['share'] = createShare;//add注释here 删除分享button
+        // tb['access'] = createAccess;//add注释here 删除访问button
         tb['fileshare'] = createFileShare;
         tb['title'] = createTitle;
         tb['pageTitle'] = createPageTitle;

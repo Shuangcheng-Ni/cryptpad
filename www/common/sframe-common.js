@@ -850,7 +850,7 @@ define([
             });
 
             ctx.sframeChan.on('EV_AUTOSTORE_DISPLAY_POPUP', function (data) {
-                UIElements.displayStorePadPopup(funcs, data);
+                // UIElements.displayStorePadPopup(funcs, data);//add 删除角落弹窗
             });
 
             ctx.sframeChan.on('EV_LOADING_ERROR', function (err) {

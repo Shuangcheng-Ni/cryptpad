@@ -136,9 +136,11 @@ define([
 
         var name;
         try {
-            name = Pages.Instance.name || new URL('/', ApiConfig.httpUnsafeOrigin).host;
+           // name = Pages.Instance.name || new URL('/', ApiConfig.httpUnsafeOrigin).host;
+           name = '忞珰';
         } catch (err) {
-            name = 'CryptPad';
+            //name = 'CryptPad';
+            name = '忞珰';
         }
         Pages.Instance.name = name;
         Pages.Instance.description = Pages.Instance.description || Msg.main_catch_phrase;

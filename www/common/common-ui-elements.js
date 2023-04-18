@@ -2999,7 +2999,8 @@ define([
         return h('div.alert.alert-danger.cp-burn-after-reading', Messages.burnAfterReading_warningDeleted);
     };
 
-    var crowdfundingState = false;
+    var crowdfundingState = false;// 初始化众筹状态变量
+    // 定义一个显示众筹弹窗的函数
     UIElements.displayCrowdfunding = function (common, force) {
         if (crowdfundingState) { return; }
         var priv = common.getMetadataMgr().getPrivateData();
@@ -3007,7 +3008,7 @@ define([
 
         var todo = function () {
             crowdfundingState = true;
-            // Display the popup
+            // 显示弹窗的内容
             var text = Messages.crowdfunding_popup_text;
             var yes = h('button.cp-corner-primary', [
                 h('span.fa.fa-external-link'),
@@ -3016,6 +3017,7 @@ define([
             var no = h('button.cp-corner-cancel', Messages.crowdfunding_popup_no);
             var actions = h('div', [no, yes]);
 
+             // 定义一个不再显示弹窗的函数
             var dontShowAgain = function () {
                 common.setAttribute(['general', 'crowdfunding'], false);
                 Feedback.send('CROWDFUNDING_NEVER');
@@ -3028,24 +3030,27 @@ define([
             //     dontShowAgain: dontShowAgain
             // });
 
+            // 为yes按钮添加点击事件
             $(yes).click(function () {
                 modal.delete();
                 common.openURL(priv.accounts.donateURL);
                 Feedback.send('CROWDFUNDING_YES');
             });
+            // 为no按钮添加点击事件
             $(no).click(function () {
                 modal.delete();
                 Feedback.send('CROWDFUNDING_NO');
             });
         };
 
+        // 如果force为真，将众筹状态设为真并执行todo函数
         if (force) {
             crowdfundingState = true;
             return void todo();
         }
 
-        if (AppConfig.disableCrowdfundingMessages) { return; }
-        if (priv.plan) { return; }
+        if (AppConfig.disableCrowdfundingMessages) { return; }// 如果应用配置中禁用了众筹消息，直接返回
+        if (priv.plan) { return; }// 如果私有数据中有计划，直接返回
 
         crowdfundingState = true;
         common.getAttribute(['general', 'crowdfunding'], function (err, val) {
@@ -3059,10 +3064,11 @@ define([
     };
 
     var storePopupState = false;
+    // 显示一个存储文档的弹出窗口
     UIElements.displayStorePadPopup = function (common, data) {
-        if (storePopupState) { return; }
+        if (storePopupState) { return; }//它首先检查该弹窗是否已经显示，如果已经显示则不会继续执行。
         storePopupState = true;
-        // We won't display the popup for dropped files or already stored pads
+        // 如果data存在且已经被存储，则在我的云端驱动器中不显示弹出框
         if (data && data.stored) {
             if (!data.inMyDrive) {
                 $('.cp-toolbar-storeindrive').show();
@@ -3071,18 +3077,21 @@ define([
         }
         var priv = common.getMetadataMgr().getPrivateData();
 
-        // This pad will be deleted automatically, it shouldn't be stored
+        //如果这个文档是一次性的，则不会自动存储
         if (priv.burnAfterReading) { return; }
 
 
+       //提示文本消息
         var typeMsg = priv.pathname.indexOf('/file/') !== -1 ? Messages.autostore_file :
                         priv.pathname.indexOf('/drive/') !== -1 ? Messages.autostore_sf :
-                          Messages.autostore_pad;
+                          Messages.autostore_pad; 
         var text = Messages._getKey('autostore_notstored', [typeMsg]);
-        var footer = Pages.setHTML(h('span'), Messages.autostore_settings);
+        var footer = Pages.setHTML(h('span'), Messages.autostore_settings); //创建“去设置”超链接标签
 
+        //创建“隐藏”和“存储”按钮
         var hide = h('button.cp-corner-cancel', Messages.autostore_hide);
         var store = h('button.cp-corner-primary', Messages.autostore_store);
+        //将按钮放到一个<div>容器中
         var actions = h('div', [hide, store]);
 
         var initialHide = data && data.autoStore && data.autoStore === -1;
@@ -3092,24 +3101,29 @@ define([
             return;
         }
 
-        // var modal = UI.cornerPopup(text, actions, footer, {hidden: initialHide});//add 注释here:取消右下角弹窗
+        // 创建弹出框
+        var modal = UI.cornerPopup(text, actions, footer, {hidden: initialHide});//add 注释here:取消右下角弹窗
 
         // Once the store pad popup is created, put the crowdfunding one in the queue
-        UIElements.displayCrowdfunding(common);
+        // UIElements.displayCrowdfunding(common);  //add 注释here:取消右下角弹窗
 
 
         autoStoreModal[priv.channel] = modal;
 
+        //为超链接标签添加点击事件，打开网址“/settings/”
         $(modal.popup).find('.cp-corner-footer a').click(function (e) {
             e.preventDefault();
             common.openURL('/settings/');
         });
 
+        //为“隐藏”按钮添加点击事件，将autoStoreModal对象中priv.channel属性删除，并删除弹出框
         $(hide).click(function () {
             delete autoStoreModal[priv.channel];
             $('.cp-toolbar-storeindrive').show();
             modal.delete();
         });
+
+        //为“存储”按钮添加点击事件
         var waitingForStoringCb = false;
         $(store).click(function () {
             if (waitingForStoringCb) { return; }

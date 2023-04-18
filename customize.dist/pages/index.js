@@ -170,12 +170,13 @@ define([
                     h('div.row.cp-home-hero', [
                         h('div.cp-title.col-lg-6', [
                             h('img', {
-                                src: '/customize/CryptPad_logo_hero.svg?' + urlArgs,
+                                // src: '/customize/CryptPad_logo_hero.svg?' + urlArgs,
+                                src: '/customize/Index_logo.svg?' + urlArgs,
                                 'aria-hidden': 'true',
                                 alt: ''
                             }),
                             instanceTitle,
-                            Pages.setHTML(h('span.tag-line'), "hhhhhhhhh"),//中文描述：“hhhhhh"
+                            Pages.setHTML(h('span.tag-line'), "忞珰"),//中文描述：“忞珰"
                             // Pages.setHTML(h('span.tag-line'), Pages.Instance.description),
                             locationBlock,
                             

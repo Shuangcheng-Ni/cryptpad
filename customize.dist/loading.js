@@ -93,8 +93,9 @@ define([
         try {
             var el1 = document.querySelector('.cp-loading-spinner-container');
             if (el1) { el1.style.display = 'none'; }
-            var el2 = document.querySelector('.cp-loading-progress-list');
-            if (el2) { el2.innerHTML = makeList(data); }
+            // var el2 = document.querySelector('.cp-loading-progress-list');
+            // if (el2) { el2.innerHTML = makeList(data); }
+            //add注释here,删除加载页面加载项
             var el3 = document.querySelector('.cp-loading-progress-container');
             if (el3) { el3.innerHTML = makeBar(data); }
         } catch (e) {

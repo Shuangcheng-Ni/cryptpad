@@ -1355,7 +1355,7 @@
     "form_changeTypeConfirm": "Select the new question type.",
     "form_corruptAnswers": "This form already has responses. Changing this question type may invalidate previous response data.",
     "form_geturl": "Copy link",
-    "toolbar_preview": "Preview",
+    "toolbar_preview": "Compile",
     "form_updateMsg": "Update submit message",
     "form_addMsg": "Add submit message",
     "form_responseMsg": "This message will be displayed after participants submit the form.",
