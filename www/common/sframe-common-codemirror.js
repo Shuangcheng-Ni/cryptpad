@@ -41,7 +41,7 @@ define([//定义模块及其依赖
         return cursor;
     };
 
-    //获取内容扩展名
+    //获取内容扩展名!!!!!-编译其他语言文件可能会用到
     module.getContentExtension = function (mode) {
         var ext = Modes.extensionOf(mode);
         return ext !== undefined ? ext : '.txt';
@@ -151,6 +151,7 @@ define([//定义模块及其依赖
 
     //设置编辑器的缩进设置
     module.mkIndentSettings = function (editor, metadataMgr) {
+
         var setIndentation = function (units, useTabs, fontSize, spellcheck, brackets) {
             if (typeof(units) !== 'number') { return; }
             var doc = editor.getDoc();
@@ -246,8 +247,8 @@ define([//定义模块及其依赖
             autoCloseBrackets: true,
             matchBrackets : true,
             showTrailingSpace : true,
-            styleActiveLine : true,
-            search: true,
+            styleActiveLine : false,        //
+            search: true,                  
             inputStyle: 'contenteditable',
             highlightSelectionMatches: {showToken: /\w+/},
             extraKeys: {"Shift-Ctrl-R": undefined},
@@ -558,8 +559,9 @@ define([//定义模块及其依赖
         var makeTippy = function (cursor) {
             return MT.getCursorAvatar(cursor);
         };
-        var marks = {};
+        
         // 移除光标
+        var marks = {};
         exp.removeCursors = function () {
             for (var id in marks) {
                 marks[id].clear();

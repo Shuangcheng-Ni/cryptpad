@@ -79,13 +79,14 @@ MessengerUI, Messages, Pages) {
 
         var $topContainer = $('<div>', {'class': TOP_CLS});
         $('<span>', {'class': 'cp-toolbar-top-filler'}).appendTo($topContainer);
-        var $userContainer = $('<span>', {
-            'class': USER_CLS
-        }).appendTo($topContainer);
-        $('<span>', {'class': LIMIT_CLS}).hide().appendTo($userContainer);
-        $('<span>', {'class': MAINTENANCE_CLS + ' cp-dropdown-container'}).hide().appendTo($userContainer);
-        $('<span>', {'class': NOTIFICATIONS_CLS + ' cp-dropdown-container'}).hide().appendTo($userContainer);
-        $('<span>', {'class': USERADMIN_CLS + ' cp-dropdown-container'}).hide().appendTo($userContainer);
+        //add 注释here:删除右上用户
+        // var $userContainer = $('<span>', {
+        //     'class': USER_CLS
+        // }).appendTo($topContainer);
+        // $('<span>', {'class': LIMIT_CLS}).hide().appendTo($userContainer);
+        // $('<span>', {'class': MAINTENANCE_CLS + ' cp-dropdown-container'}).hide().appendTo($userContainer);
+        // $('<span>', {'class': NOTIFICATIONS_CLS + ' cp-dropdown-container'}).hide().appendTo($userContainer);
+        // $('<span>', {'class': USERADMIN_CLS + ' cp-dropdown-container'}).hide().appendTo($userContainer);
 
         $toolbar.append($topContainer);
         

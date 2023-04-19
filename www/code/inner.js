@@ -240,7 +240,7 @@ define([
         //---------------------------------------------------------------------------------------------------
         $previewButton.click(function () {
             clearTimeout(previewTo);
-            $codeMirror.addClass('transition');//为 $codeMirror 添加 transition 类，使其在预览切换时产生过渡动画效果。
+            // $codeMirror.addClass('transition');//为 $codeMirror 添加 transition 类，使其在预览切换时产生过渡动画效果。
             previewTo = setTimeout(function () {
                 $codeMirror.removeClass('transition');
             }, 500);//在延时结束时，移除 $codeMirror 的 transition 类,设置延时为 500 毫秒。
@@ -250,7 +250,7 @@ define([
             // $previewContainer.toggle();//切换预览容器 $previewContainer 的可见状态
 
             // 根据预览容器的可见状态执行以下操作：
-            
+
             // ------始终执行分支--nsc
 
             // 如果预览容器可见，调用 forceDrawPreview 函数强制绘制预览，
@@ -259,34 +259,39 @@ define([
             // if ($previewContainer.is(':visible')) {
 
             //-------------------新加新加ljy------------------------------------
+            //------加上报错信息--nsc
+            //------修复输出中含"Standard out:\n"时截断的bug--nsc
 
             console.log(editor.getValue());
             var $preview = $('#cp-app-code-preview-content');
-            $preview.text('正在编译中！！！') // ------增加提示--nsc
+            $preview.text('这段代码我也是第一次遇到，正在编译中！！！') // ------增加提示--nsc
             var code = editor.getValue();
 
             var data = {
-                source: code,
-                compiler: "g122",
-                options: {
-                    userArguments: "",
-                    executeParameters: {
-                        args: "",
-                        stdin: ""
+                "source": code,
+                "options": {
+                    "userArguments": "-std=c++23",
+                    "compilerOptions": {
+                        "skipAsm": true,
+                        "executorRequest": false
                     },
-                    compilerOptions: {
-                        executorRequest: true,
-                        skipAsm: true
+                    "filters": {
+                        "binary": false,
+                        "binaryObject": false,
+                        "commentOnly": true,
+                        "demangle": true,
+                        "directives": true,
+                        "execute": true,
+                        "intel": true,
+                        "labels": true,
+                        "libraryCode": false,
+                        "trim": false
                     },
-                    filters: {
-                        execute: true
-                    },
-                    tools: [],
-                    libraries: []
+                    "tools": [],
+                    "libraries": []
                 },
-                lang: "c++",
-                files: [],
-                allowStoreCodeDebug: true
+                "lang": "c++",
+                "allowStoreCodeDebug": true
             };
             var url = "https://go.godbolt.org/api/compiler/g122/compile";
             fetch(url, {
@@ -297,25 +302,28 @@ define([
                 body: JSON.stringify(data)
             })
                 .then(response => {
-                    console.log("---abc---\n" + response.text());
                     return response.text();
+                    // return response.json();
+                    // return document.getElementsByClassName("card execution-stdout").textContent;
                 })
                 .then(payload => {//增加错误处理
                     // 检查payload中是否包含"Standard err:"
-                    if (payload.includes("Standard err:")) {
-                        // 如果payload中有"Standard err:"，则输出错误信息
-                        // console.log("Compiler exited with result code -1");
-                        var output = payload.split("Standard err:\n")[1].trim();
-                        console.log(output);
-                        $preview.text(output);
-                    } else {
+                    if (payload.includes("Standard out:")) {
                         // 从payload中提取需要的部分
-                        // var output = payload.split("Standard out:\n")[1].trim();
-                        var output = document.getElementsByClassName("card execution-stdout").text;
+                        var pos = payload.indexOf("Standard out:\n") + "Standard out:\n".length;
+                        var output = payload.substring(pos).trim();
                         console.log(output);
                         // 将提取的输出输出到页面中
-                        //document.getElementById("output").textContent = output;
+                        // document.getElementById("output").textContent = output;
                         $preview.text(output);
+                    } else {
+                        // 如果payload中无"Standard out:"，则输出错误信息
+                        var pos = payload.indexOf("Standard error:\n") + "Standard error:\n".length;
+                        var errmsg = payload.substring(pos).trim().replace(/\033\[.*?\[K/g, '');
+                        console.log("Compilation error.");
+                        console.log(errmsg);
+                        $preview.text(errmsg);
+                        
                     }
                 })
 
