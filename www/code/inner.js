@@ -76,6 +76,17 @@ define([
         'xml',
     ]);
 
+    //预览页面换行输出
+    var wrTextBr = function ($preview, text_string) {
+        $preview.empty();
+        string_array = text_string.split("\n");
+        string_array.forEach(function (element) {
+            $preview.append($("<p>").text(element));
+        })
+    }
+
+
+
     // 创建主题切换按钮
     var mkThemeButton = function (framework) {
         var $theme = $(h('button.cp-toolbar-appmenu', [
@@ -139,6 +150,7 @@ define([
 
         framework._.toolbar.$drawer.append(helpMenu.button);
     };
+    //
 
     //previews:用于渲染不同格式（如Markdown、HTML、AsciiDoc）的预览功能
     var previews = {};
@@ -214,12 +226,16 @@ define([
                 var $preview = $('#cp-app-code-preview-content');
 
 
+                //--------preview换行测试---lpd--------------------
 
-
-
+                /*var text_array=editor.getValue().split("\n");
+                text_array.forEach(function(element){
+                    $preview.append(element+"<br>");
+                })*/
 
                 //先改成左边的值
-                $preview.text(editor.getValue());
+                wrTextBr($preview, editor.getValue());
+                //$preview.text(wrTextBr(editor.getValue()));
 
             } catch (e) { console.error(e); }
         };
@@ -315,15 +331,19 @@ define([
                         console.log(output);
                         // 将提取的输出输出到页面中
                         // document.getElementById("output").textContent = output;
-                        $preview.text(output);
+
+                        //----lpd--
+                        wrTextBr($preview, output);
+                        //$preview.text(output);
                     } else {
                         // 如果payload中无"Standard out:"，则输出错误信息
                         var pos = payload.indexOf("Standard error:\n") + "Standard error:\n".length;
                         var errmsg = payload.substring(pos).trim().replace(/\033\[.*?\[K/g, '');
                         console.log("Compilation error.");
                         console.log(errmsg);
-                        $preview.text(errmsg);
-                        
+                        wrTextBr($preview, errmsg);
+                        //$preview.text(errmsg);
+
                     }
                 })
 
@@ -613,7 +633,7 @@ define([
             }
 
             // 修复标记偏移
-            markers.checkMarks(newContent);
+            //markers.checkMarks(newContent);
 
             // 更新编辑器内容
             // CodeMirror.contentUpdate("waaaaaaaa");//lkj add 注释 here：用于修改界面以及内容更新
