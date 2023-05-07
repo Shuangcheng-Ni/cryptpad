@@ -1053,7 +1053,7 @@ define([
                             cm = SFCodeMirror.create("gfm", CMeditor, t);
                             editor = cm.editor;
                             editor.setOption('lineNumbers', true);
-                            editor.setOption('lineWrapping', true);
+                            editor.setOption('lineWrapping', true)
                             editor.setOption('styleActiveLine', true);
                             editor.setOption('readOnly', false);
                         }
@@ -5162,7 +5162,8 @@ define([
 
             cm.configureTheme(APP.common, function () {});
             editor.setOption('lineNumbers', true);
-            editor.setOption('lineWrapping', true);
+            //wyd changed here 
+            editor.setOption('lineWrapping', true)
             editor.setOption('styleActiveLine', true);
             editor.setOption('readOnly', false);
             setTimeout(function () {
