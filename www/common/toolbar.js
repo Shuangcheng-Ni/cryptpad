@@ -41,7 +41,7 @@ MessengerUI, Messages, Pages) {
     var USERLIST_CLS = Bar.constants.userlist = "cp-toolbar-users";
 
     // Top parts
-    var USER_CLS = Bar.constants.userAdmin = "cp-toolbar-user";//add注释here,删除右上角两个用户按钮
+    var USER_CLS = Bar.constants.userAdmin = "cp-toolbar-user";//add注释here: 右上角两个用户按钮
     var SPINNER_CLS = Bar.constants.spinner = 'cp-toolbar-spinner';
     var LIMIT_CLS = Bar.constants.limit = 'cp-toolbar-limit';
     var TITLE_CLS = Bar.constants.title = "cp-toolbar-title";
@@ -50,10 +50,10 @@ MessengerUI, Messages, Pages) {
     var MAINTENANCE_CLS = Bar.constants.user = 'cp-toolbar-maintenance';
 
     // User admin menu
-    var USERADMIN_CLS = Bar.constants.user = 'cp-toolbar-user-dropdown';//add注释here,删除右上角两个用户按钮
-    var USERNAME_CLS = Bar.constants.username = 'cp-toolbar-user-name';//add注释here,删除右上角两个用户按钮
+    var USERADMIN_CLS = Bar.constants.user = 'cp-toolbar-user-dropdown';//add注释here: 右上角两个用户按钮
+    var USERNAME_CLS = Bar.constants.username = 'cp-toolbar-user-name';//add注释here: 右上角两个用户按钮
     /*var READONLY_CLS = */Bar.constants.readonly = 'cp-toolbar-readonly';
-    var USERBUTTON_CLS = Bar.constants.changeUsername = "cp-toolbar-user-rename";//add注释here,删除右上角两个用户按钮
+    var USERBUTTON_CLS = Bar.constants.changeUsername = "cp-toolbar-user-rename";//add注释here: 右上角两个用户按钮
 
     // Create the toolbar element
 
@@ -61,6 +61,7 @@ MessengerUI, Messages, Pages) {
         return 'cp-toolbar-uid-' + String(Math.random()).substring(2);
     };
 
+    //创建实时工具栏
     var createRealtimeToolbar = function (config) {
         if (!config.$container) { return; }
         var $container = config.$container;
@@ -72,29 +73,31 @@ MessengerUI, Messages, Pages) {
             $container.hide();
         }
 
+        //上方整体工具框（除了左右下方的代码框的部分）Top1级
         var $toolbar = $('<div>', {
             'class': TOOLBAR_CLS,
             id: uid(),
         });
 
+        //头像和文字那行  Top2 级
         var $topContainer = $('<div>', {'class': TOP_CLS});
-        $('<span>', {'class': 'cp-toolbar-top-filler'}).appendTo($topContainer);
-        //add 注释here:删除右上用户
-        // var $userContainer = $('<span>', {
-        //     'class': USER_CLS
-        // }).appendTo($topContainer);
-        // $('<span>', {'class': LIMIT_CLS}).hide().appendTo($userContainer);
-        // $('<span>', {'class': MAINTENANCE_CLS + ' cp-dropdown-container'}).hide().appendTo($userContainer);
-        // $('<span>', {'class': NOTIFICATIONS_CLS + ' cp-dropdown-container'}).hide().appendTo($userContainer);
-        // $('<span>', {'class': USERADMIN_CLS + ' cp-dropdown-container'}).hide().appendTo($userContainer);
+        $('<span>', {'class': 'cp-toolbar-top-filler'}).appendTo($topContainer);//Top3 级
+        //右上用户  Top3 级
+        var $userContainer = $('<span>', {
+            'class': USER_CLS
+        }).appendTo($topContainer);
+        $('<span>', {'class': LIMIT_CLS}).hide().appendTo($userContainer);
+        $('<span>', {'class': MAINTENANCE_CLS + ' cp-dropdown-container'}).hide().appendTo($userContainer);
+        // $('<span>', {'class': NOTIFICATIONS_CLS + ' cp-dropdown-container'}).hide().appendTo($userContainer);//通知栏
+        $('<span>', {'class': USERADMIN_CLS + ' cp-dropdown-container'}).hide().appendTo($userContainer);//右上角头像按钮
 
         $toolbar.append($topContainer);
         
-        //add 注释here:上方文档、主题、工具等
+        //上方文档、主题、工具等
         var $bottom = $(h('div.'+BOTTOM_CLS, [
-            // h('div.'+BOTTOM_LEFT_CLS),
+            h('div.'+BOTTOM_LEFT_CLS),
             h('div.'+BOTTOM_MID_CLS),
-            // h('div.'+BOTTOM_RIGHT_CLS)
+            h('div.'+BOTTOM_RIGHT_CLS)
         ])).appendTo($toolbar);
         $toolbar.append(h('div.'+HISTORY_CLS));
         $toolbar.append(h('div.'+SNAPSHOTS_CLS));
@@ -1303,7 +1306,7 @@ MessengerUI, Messages, Pages) {
 
 
 
-    // Main
+    // Main——控制组件是否显示！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
 
     Bar.create = function (cfg) {
         var config = cfg || {};
@@ -1334,9 +1337,9 @@ MessengerUI, Messages, Pages) {
         var tb = {};
         tb['userlist'] = createUserList;
         tb['collapse'] = createCollapse;
-        tb['chat'] = createChat;
-        // tb['share'] = createShare;//add注释here 删除分享button
-        // tb['access'] = createAccess;//add注释here 删除访问button
+        // tb['chat'] = createChat;//add 注释here : 删除聊天button
+        // tb['share'] = createShare;//add 注释here : 删除分享button
+        // tb['access'] = createAccess;//add 注释here : 删除访问button
         tb['fileshare'] = createFileShare;
         tb['title'] = createTitle;
         tb['pageTitle'] = createPageTitle;

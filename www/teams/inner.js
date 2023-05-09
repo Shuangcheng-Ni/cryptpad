@@ -46,8 +46,7 @@ define([
     InviteInner,
     Clipboard,
     Backup,
-    Messages)
-{
+    Messages) {
     var APP = {
         teams: {}
     };
@@ -86,7 +85,7 @@ define([
                         }
                         return;
                     }
-                    folders[fId] = folders[fId] || {};
+                    folders[fId] = folders[fId] || {};
                     copyObjectValue(folders[fId], newObj);
                     folders[fId].readOnly = !secret.keys.secondaryKey;
                     if (manager && oldIds.indexOf(fId) === -1) {
@@ -169,17 +168,18 @@ define([
                 closeTeam(common);
             }
         },
-        'drive': [ // Msg.team_cat_drive
+        'drive': [ // Msg.team_cat_drive //磁盘
             'cp-team-drive'
         ],
         'members': [ // Msg.team_cat_members
             'cp-team-offline',
             'cp-team-roster'
         ],
-        'chat': [ // Msg.team_cat_chat
-            'cp-team-offline',
-            'cp-team-chat'
-        ],
+        //1111ljy
+        // 'chat': [ // Msg.team_cat_chat
+        //     'cp-team-offline',
+        //     'cp-team-chat'
+        // ],
         'admin': [ // Msg.team_cat_admin
             'cp-team-offline',
             'cp-team-edpublic',
@@ -200,13 +200,13 @@ define([
     var showCategories = function (cat) {
         hideCategories();
         cat.forEach(function (c) {
-            APP.$rightside.find('.'+c).css('display', '');
+            APP.$rightside.find('.' + c).css('display', '');
         });
     };
     var createLeftSide = APP.createLeftSide = function (common, team, teamAdmin) {
         APP.$leftside.empty();
-        var $categories = $('<div>', {'class': 'cp-sidebarlayout-categories'})
-                            .appendTo(APP.$leftside);
+        var $categories = $('<div>', { 'class': 'cp-sidebarlayout-categories' })
+            .appendTo(APP.$leftside);
 
         var hash = common.getMetadataMgr().getPrivateData().teamInviteHash && mainCategories.link;
 
@@ -214,7 +214,7 @@ define([
         var active = team ? 'drive' : (hash ? 'link' : 'list');
 
         if (team && APP.team) {
-            var $category = $('<div>', {'class': 'cp-sidebarlayout-category cp-team-cat-header'}).appendTo($categories);
+            var $category = $('<div>', { 'class': 'cp-sidebarlayout-category cp-team-cat-header' }).appendTo($categories);
             var avatar = h('div.cp-avatar');
             var $avatar = $(avatar);
             APP.module.execCommand('GET_TEAM_METADATA', {
@@ -237,16 +237,16 @@ define([
         Object.keys(categories).forEach(function (key) {
             if (key === 'admin' && !teamAdmin) { return; }
 
-            var $category = $('<div>', {'class': 'cp-sidebarlayout-category cp-team-cat-'+key}).appendTo($categories);
-            if (key === 'general') { $category.append($('<span>', {'class': 'fa fa-info-circle'})); }
-            if (key === 'list') { $category.append($('<span>', {'class': 'fa fa-list cp-team-cat-list'})); }
-            if (key === 'create') { $category.append($('<span>', {'class': 'fa fa-plus-circle'})); }
-            if (key === 'back') { $category.append($('<span>', {'class': 'fa fa-arrow-left'})); }
-            if (key === 'members') { $category.append($('<span>', {'class': 'fa fa-users'})); }
-            if (key === 'chat') { $category.append($('<span>', {'class': 'fa fa-comments'})); }
-            if (key === 'drive') { $category.append($('<span>', {'class': 'fa fa-hdd-o'})); }
-            if (key === 'admin') { $category.append($('<span>', {'class': 'fa fa-cogs'})); }
-            if (key === 'link') { $category.append($('<span>', {'class': 'fa fa-envelope'})); }
+            var $category = $('<div>', { 'class': 'cp-sidebarlayout-category cp-team-cat-' + key }).appendTo($categories);
+            if (key === 'general') { $category.append($('<span>', { 'class': 'fa fa-info-circle' })); }
+            if (key === 'list') { $category.append($('<span>', { 'class': 'fa fa-list cp-team-cat-list' })); }
+            if (key === 'create') { $category.append($('<span>', { 'class': 'fa fa-plus-circle' })); }
+            if (key === 'back') { $category.append($('<span>', { 'class': 'fa fa-arrow-left' })); }
+            if (key === 'members') { $category.append($('<span>', { 'class': 'fa fa-users' })); }
+            if (key === 'chat') { $category.append($('<span>', { 'class': 'fa fa-comments' })); }
+            if (key === 'drive') { $category.append($('<span>', { 'class': 'fa fa-hdd-o' })); }//磁盘
+            if (key === 'admin') { $category.append($('<span>', { 'class': 'fa fa-cogs' })); }
+            if (key === 'link') { $category.append($('<span>', { 'class': 'fa fa-envelope' })); }
 
             if (key === active) {
                 $category.addClass('cp-leftside-active');
@@ -275,7 +275,7 @@ define([
                 showCategories(categories[key]);
             });
 
-            $category.append(h('span.cp-sidebarlayout-category-name', Messages['team_cat_'+key] || key));
+            $category.append(h('span.cp-sidebarlayout-category-name', Messages['team_cat_' + key] || key));
         });
         if (active === 'drive') {
             APP.$rightside.addClass('cp-rightside-drive');
@@ -320,7 +320,7 @@ define([
                 updateSharedFolders(sframeChan, null, proxy.drive, folders, waitFor());
             }));
         }).nThen(function () {
-            if (!proxy.drive || typeof(proxy.drive) !== 'object') {
+            if (!proxy.drive || typeof (proxy.drive) !== 'object') {
                 throw new Error("Corrupted drive");
             }
             driveAPP.team = id;
@@ -373,11 +373,11 @@ define([
         var safeKey = key.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
 
         create[key] = function (common) {
-            var $div = $('<div>', {'class': 'cp-team-' + key + ' cp-sidebarlayout-element'});
+            var $div = $('<div>', { 'class': 'cp-team-' + key + ' cp-sidebarlayout-element' });
             if (full) {
-                $('<label>').text(Messages['team_'+safeKey+'Title'] || key).appendTo($div);
-                $('<span>', {'class': 'cp-sidebarlayout-description'})
-                    .text(Messages['team_'+safeKey+'Hint'] || 'Coming soon...').appendTo($div);
+                $('<label>').text(Messages['team_' + safeKey + 'Title'] || key).appendTo($div);
+                $('<span>', { 'class': 'cp-sidebarlayout-description' })
+                    .text(Messages['team_' + safeKey + 'Hint'] || 'Coming soon...').appendTo($div);
             }
             getter(common, function (content) {
                 $div.append(content);
@@ -434,8 +434,8 @@ define([
             if (obj.error === "OFFLINE") { return UI.alert(Messages.driveOfflineError); }
             if (obj.error) { return void console.error(obj.error); }
             var list = [];
-            var keys = Object.keys(obj).slice(0,MAX_TEAMS_SLOTS);
-            var slots = '('+Math.min(keys.length, MAX_TEAMS_SLOTS)+'/'+MAX_TEAMS_SLOTS+')';
+            var keys = Object.keys(obj).slice(0, MAX_TEAMS_SLOTS);
+            var slots = '(' + Math.min(keys.length, MAX_TEAMS_SLOTS) + '/' + MAX_TEAMS_SLOTS + ')';
             var createSlots = canCreateTeams(obj);
             for (var i = keys.length; i < MAX_TEAMS_SLOTS; i++) {
                 obj[i] = {
@@ -469,7 +469,7 @@ define([
                     created++;
                 }
                 if (team.empty) {
-                    var createTeamDiv = h('div.cp-team-list-team.empty'+createCls, [
+                    var createTeamDiv = h('div.cp-team-list-team.empty' + createCls, [
                         h('span.cp-team-list-name.empty', Messages.team_listSlot),
                         createBtn
                     ]);
@@ -507,7 +507,7 @@ define([
         refreshList(common, cb);
     });
 
-    var refreshLink = function () {}; // placeholder
+    var refreshLink = function () { }; // placeholder
     var refreshCreate = function (common, cb) {
         var metadataMgr = common.getMetadataMgr();
         var privateData = metadataMgr.getPrivateData();
@@ -519,7 +519,7 @@ define([
 
         var getWarningBox = function () {
             return h('div.alert.alert-warning', {
-                role:'alert'
+                role: 'alert'
             }, Messages._getKey('team_maxTeams', [MAX_TEAMS_SLOTS]));
         };
 
@@ -530,13 +530,13 @@ define([
 
         content.push(h('h3', Messages.team_createLabel));
         content.push(h('label', Messages.team_createName));
-        var input = h('input', {type:'text'});
+        var input = h('input', { type: 'text' });
         content.push(input);
         var button = h('button.btn.btn-success', Messages.creation_create);
         content.push(h('br'));
         content.push(h('br'));
         content.push(button);
-        var $spinner = $('<span>', {'class': 'fa fa-spinner fa-pulse'}).hide();
+        var $spinner = $('<span>', { 'class': 'fa fa-spinner fa-pulse' }).hide();
         content.push($spinner[0]);
         var state = false;
         $(button).click(function () {
@@ -581,15 +581,16 @@ define([
         refreshCreate(common, cb);
     });
 
+    ///1111ljy
     makeBlock('drive', function (common, cb, $div) {
         $('div.cp-team-drive').empty();
         $div.removeClass('cp-sidebarlayout-element'); // Don't apply buttons and input styles from sidebarlayout
         var content = [
-            h('div.cp-app-drive-container', {tabindex:0}, [
+            h('div.cp-app-drive-container', { tabindex: 0 }, [
                 h('div#cp-app-drive-tree'),
                 h('div#cp-app-drive-content-container', [
-                    h('div#cp-app-drive-connection-state.cp-banner.cp-banner-danger', {style: "display: none;"}, Messages.disconnected),
-                    h('div#cp-app-drive-content', {tabindex:2})
+                    h('div#cp-app-drive-connection-state.cp-banner.cp-banner-danger', { style: "display: none;" }, Messages.disconnected),
+                    h('div#cp-app-drive-content', { tabindex: 2 })
                 ])
             ])
         ];
@@ -613,7 +614,7 @@ define([
     };
 
     var makePermissions = function () {
-        var modal= UI.createModal({
+        var modal = UI.createModal({
             id: 'cp-teams-roster-dialog',
         });
         modal.show();
@@ -627,7 +628,7 @@ define([
         // Global rights
         var rows = [];
         var firstRow = [Messages.teams_table_role, Messages.share_linkView, Messages.share_linkEdit,
-                            Messages.teams_table_admins, Messages.teams_table_owners];
+        Messages.teams_table_admins, Messages.teams_table_owners];
         rows.push(h('tr', makeRow(firstRow, true)));
         rows.push(h('tr', makeRow([
             Messages.team_viewers, h('span.fa.fa-check'), h('span.fa.fa-times'), h('span.fa.fa-times'), h('span.fa.fa-times')
@@ -729,7 +730,7 @@ define([
             $(name).append(h('em', ' (' + r + ')'));
         }
         // Status
-        var status = h('span.cp-team-member-status'+(data.online ? '.online' : ''));
+        var status = h('span.cp-team-member-status' + (data.online ? '.online' : ''));
         // Actions
         var actions = h('span.cp-online.cp-team-member-actions');
         var $actions = $(actions);
@@ -788,7 +789,7 @@ define([
                     }, demote);
                 };
                 if (isMe) {
-                    return void UI.confirm(Messages.team_demoteMeConfirm, function (yes) {
+                    return void UI.confirm(Messages.team_demoteMeConfirm, function (yes) {
                         if (!yes) { return; }
                         todo();
                     });
@@ -859,7 +860,7 @@ define([
         return div;
     };
     APP.refreshRoster = function (common, roster) {
-        if (!roster || typeof(roster) !== "object" || Object.keys(roster) === 0) { return; }
+        if (!roster || typeof (roster) !== "object" || Object.keys(roster) === 0) { return; }
         var metadataMgr = common.getMetadataMgr();
         var userData = metadataMgr.getUserData();
         var me = roster[userData.curvePublic] || {};
@@ -916,7 +917,7 @@ define([
         if (me && (me.role === 'ADMIN' || me.role === 'OWNER')) {
             var invite = h('button.cp-online.btn.btn-primary', Messages.team_inviteButton);
             var inviteFriends = common.getFriends();
-            Object.keys(inviteFriends).forEach(function (curve) {
+            Object.keys(inviteFriends).forEach(function (curve) {
                 // Keep only friends that are not already in the team and that you can contact
                 // via their mailbox
                 if (roster[curve] && !roster[curve].pending) {
@@ -973,10 +974,10 @@ define([
             h('div', members),
             h('h3', Messages.team_viewers || 'VIEWERS'),
             h('div', viewers),
-            h('h3'+noPending, Messages.team_pending),
-            h('div'+noPending, pending),
-            h('h3'+noLinks, Messages.team_links),
-            h('div'+noLinks, links)
+            h('h3' + noPending, Messages.team_pending),
+            h('div' + noPending, pending),
+            h('h3' + noLinks, Messages.team_links),
+            h('div' + noLinks, links)
         ];
     };
     makeBlock('roster', function (common, cb) {
@@ -1022,9 +1023,9 @@ define([
         var publicKey = team.edPublic;
         var name = team.name;
         if (publicKey) {
-            var $key = $('<div>', {'class': 'cp-sidebarlayout-element'}).appendTo($div);
+            var $key = $('<div>', { 'class': 'cp-sidebarlayout-element' }).appendTo($div);
             var userHref = Hash.getPublicSigningKeyString(privateData.origin, name, publicKey);
-            var $pubLabel = $('<span>', {'class': 'label'})
+            var $pubLabel = $('<span>', { 'class': 'label' })
                 .text(Messages.settings_publicSigningKey);
             $key.append($pubLabel).append(UI.dialog.selectable(userHref));
         }
@@ -1033,15 +1034,16 @@ define([
     });
 
     makeBlock('name', function (common, cb) { // Msg.team_nameHint, .team_nameTitle
-        var $inputBlock = $('<div>', {'class': 'cp-sidebarlayout-input-block'});
+        var $inputBlock = $('<div>', { 'class': 'cp-sidebarlayout-input-block' });
         var $input = $('<input>', {
             'type': 'text',
             'id': 'cp-settings-displayname',
-            'placeholder': Messages.anonymous}).appendTo($inputBlock);
-        var $save = $('<button>', {'class': 'cp-online-alt btn btn-primary'}).text(Messages.settings_save).appendTo($inputBlock);
+            'placeholder': Messages.anonymous
+        }).appendTo($inputBlock);
+        var $save = $('<button>', { 'class': 'cp-online-alt btn btn-primary' }).text(Messages.settings_save).appendTo($inputBlock);
 
-        var $ok = $('<span>', {'class': 'fa fa-check', title: Messages.saved}).hide();
-        var $spinner = $('<span>', {'class': 'fa fa-spinner fa-pulse'}).hide();
+        var $ok = $('<span>', { 'class': 'fa fa-check', title: Messages.saved }).hide();
+        var $spinner = $('<span>', { 'class': 'fa fa-spinner fa-pulse' }).hide();
 
         var todo = function () {
             var newName = $input.val();
@@ -1118,7 +1120,7 @@ define([
         $upButton.addClass('cp-online');
         $upButton.removeProp('title');
         $upButton.text(Messages.profile_upload);
-        $upButton.prepend($('<span>', {'class': 'fa fa-upload'}));
+        $upButton.prepend($('<span>', { 'class': 'fa fa-upload' }));
 
         APP.module.execCommand('GET_TEAM_METADATA', {
             teamId: APP.team
@@ -1156,25 +1158,25 @@ define([
         var team = privateData.teams[APP.team] || {};
         var teamName = team.name || Messages.anonymous;
 
-        var exportDrive = function() {
+        var exportDrive = function () {
             Feedback.send('FULL_TEAMDRIVE_EXPORT_START');
-            var todo = function(data, filename) {
+            var todo = function (data, filename) {
                 var ui = Backup.createExportUI(privateData.origin);
 
-                var bu = Backup.create(data, common.getPad, privateData.fileHost, function(blob, errors) {
+                var bu = Backup.create(data, common.getPad, privateData.fileHost, function (blob, errors) {
                     saveAs(blob, filename);
                     sframeChan.event('EV_CRYPTGET_DISCONNECT');
-                    ui.complete(function() {
+                    ui.complete(function () {
                         Feedback.send('FULL_TEAMDRIVE_EXPORT_COMPLETE');
                         saveAs(blob, filename);
                     }, errors);
                 }, ui.update, common.getCache, common.getSframeChannel());
-                ui.onCancel(function() {
+                ui.onCancel(function () {
                     ui.close();
                     bu.stop();
                 });
             };
-            sframeChan.query("Q_SETTINGS_DRIVE_GET", "full", function(err, data) {
+            sframeChan.query("Q_SETTINGS_DRIVE_GET", "full", function (err, data) {
                 if (err) { return void console.error(err); }
                 if (data.error) { return void console.error(data.error); }
                 var filename = teamName + '-' + new Date().toDateString() + '.zip';
@@ -1194,8 +1196,8 @@ define([
     makeBlock('delete', function (common, cb, $div) { // Msg.team_deleteHint, .team_deleteTitle
         $div.addClass('cp-online');
         var deleteTeam = h('button.btn.btn-danger', Messages.team_deleteButton);
-        var $ok = $('<span>', {'class': 'fa fa-check', title: Messages.saved}).hide();
-        var $spinner = $('<span>', {'class': 'fa fa-spinner fa-pulse'}).hide();
+        var $ok = $('<span>', { 'class': 'fa fa-check', title: Messages.saved }).hide();
+        var $spinner = $('<span>', { 'class': 'fa fa-spinner fa-pulse' }).hide();
 
         var deleting = false;
         $(deleteTeam).click(function () {
@@ -1261,8 +1263,8 @@ define([
         var c = [
             h('h2', Messages.team_inviteTitle),
             errorBlock = h('div.alert.alert-danger',
-                                wrongPassword ? undefined : {style: 'display: none;'},
-                                wrongPassword ? Messages.drive_sfPasswordError : undefined),
+                wrongPassword ? undefined : { style: 'display: none;' },
+                wrongPassword ? Messages.drive_sfPasswordError : undefined),
             div
         ];
         // "cb" will put the content into the UI.
@@ -1281,8 +1283,8 @@ define([
         ]);
         var $inviteDiv = $(inviteDiv);
 
-        $(declineButton).click(function() {
-            
+        $(declineButton).click(function () {
+
         });
 
         var process = function (pw) {
@@ -1378,9 +1380,9 @@ define([
                 ]));
                 $div.append(UI.setHTML(h('p.cp-teams-invite-to'),
                     Messages._getKey('team_inviteFromMsg',
-                    [Util.fixHTML(getDisplayName(json.author.displayName)),
-                    Util.fixHTML(json.teamName)])));
-                if (typeof(json.message) === 'string' && json.message) {
+                        [Util.fixHTML(getDisplayName(json.author.displayName)),
+                        Util.fixHTML(json.teamName)])));
+                if (typeof (json.message) === 'string' && json.message) {
                     var message = h('div.cp-teams-invite-message');
                     json.message.split('\n').forEach(line => {
                         if (line.trim()) {
@@ -1425,7 +1427,7 @@ define([
             $inviteDiv.prepend(h('div.cp-teams-invite-password', [
                 h('p', Messages.team_inviteEnterPassword),
                 pwInput
-            ])); 
+            ]));
             waitFor.abort();
         }).nThen(function () {
             // No password, display the invitation proposal
@@ -1468,8 +1470,8 @@ define([
             SFCommon.create(waitFor(function (c) { common = c; }));
         }).nThen(function (waitFor) {
             APP.$container = $('#cp-sidebarlayout-container');
-            APP.$leftside = $('<div>', {id: 'cp-sidebarlayout-leftside'}).appendTo(APP.$container);
-            APP.$rightside = $('<div>', {id: 'cp-sidebarlayout-rightside'}).appendTo(APP.$container);
+            APP.$leftside = $('<div>', { id: 'cp-sidebarlayout-leftside' }).appendTo(APP.$container);
+            APP.$rightside = $('<div>', { id: 'cp-sidebarlayout-rightside' }).appendTo(APP.$container);
             var sFrameChan = common.getSframeChannel();
             sFrameChan.onReady(waitFor());
         }).nThen(function () {
@@ -1535,7 +1537,7 @@ define([
             if (!hash && !driveAPP.loggedIn) {
                 UI.alert(Messages.mustLogin, function () {
                     common.setLoginRedirect('login');
-                }, {forefront: true});
+                }, { forefront: true });
                 return;
             }
             if (!hash) {

@@ -1,3 +1,4 @@
+.gitignore
 datastore
 tasks
 www/bower_components/*
@@ -23,3 +24,4 @@ logs/
 privileged.conf
 config/config.js
 *.sh
+cmp

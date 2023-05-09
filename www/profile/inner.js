@@ -449,8 +449,9 @@ define([
         $block.append(div);
 
         var cm = SFCodeMirror.create("gfm", CodeMirror, text);
-        var editor = APP.editor = cm.editor;
+        var editor = APP.editor = cm.editor;``
         editor.setOption('lineNumbers', true);
+        //wyd changed here
         editor.setOption('lineWrapping', true);
         editor.setOption('styleActiveLine', true);
         editor.setOption('readOnly', false);

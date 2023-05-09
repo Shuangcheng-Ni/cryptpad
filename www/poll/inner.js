@@ -1347,6 +1347,7 @@ define([
             var cm = SFCodeMirror.create("gfm", CMeditor, APP.$description[0]);
             var editor = APP.editor = cm.editor;
             editor.setOption('lineNumbers', true);
+            //wyd changed here 
             editor.setOption('lineWrapping', true);
             editor.setOption('styleActiveLine', true);
             editor.setOption('readOnly', false);

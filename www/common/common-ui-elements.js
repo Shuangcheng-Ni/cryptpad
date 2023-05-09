@@ -1847,7 +1847,7 @@ define([
                 },
             });
         }
-        if (padType !== 'calendar' && accountName) {
+        /*if (padType !== 'calendar' && accountName) {  //删除“日历”
             options.push({
                 tag: 'a',
                 attributes: {
@@ -1858,8 +1858,8 @@ define([
                     Common.openURL('/calendar/');
                 },
             });
-        }
-        if (padType !== 'contacts' && accountName) {
+        }*/
+        /*if (padType !== 'contacts' && accountName) {  //删除“联系我们”
             options.push({
                 tag: 'a',
                 attributes: {
@@ -1870,8 +1870,8 @@ define([
                     Common.openURL('/contacts/');
                 },
             });
-        }
-        if (padType !== 'settings') {
+        }*/
+        /*if (padType !== 'settings') {                 //删除“设置”
             options.push({
                 tag: 'a',
                 attributes: {'class': 'cp-toolbar-menu-settings fa fa-cog'},
@@ -1884,7 +1884,7 @@ define([
                     }
                 },
             });
-        }
+        }*/
 
         options.push({ tag: 'hr' });
         // Add administration panel link if the user is an admin
@@ -1902,7 +1902,7 @@ define([
                 },
             });
         }
-        options.push({
+        /*options.push({        //删除“文档”
             tag: 'a',
             attributes: {
                 'target': '_blank',
@@ -1911,8 +1911,8 @@ define([
                 'class': 'fa fa-book'
             },
             content: h('span', Messages.docs_link)
-        });
-        if (padType !== 'support' && accountName && Config.supportMailbox) {
+        });*/
+        if (padType !== 'support' && accountName && Config.supportMailbox) {  //这个不知道是什么
             options.push({
                 tag: 'a',
                 attributes: {'class': 'cp-toolbar-menu-support fa fa-life-ring'},
@@ -1927,7 +1927,7 @@ define([
             });
         }
 
-        options.push({
+        /*options.push({    //删除“关于我们”
             tag: 'a',
             attributes: {
                 'class': 'cp-toolbar-about fa fa-info',
@@ -1936,7 +1936,7 @@ define([
             action: function () {
                 UIElements.displayInfoMenu(Common, metadataMgr);
             },
-        });
+        });*/
 
         options.push({
             tag: 'a',

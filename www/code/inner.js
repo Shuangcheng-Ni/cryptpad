@@ -105,6 +105,17 @@ define([
         'xml',
     ]);
 
+    //预览页面换行输出
+    var wrTextBr = function ($preview, text_string) {
+        $preview.empty();
+        string_array = text_string.split("\n");
+        string_array.forEach(function (element) {
+            $preview.append($("<p>").text(element));
+        })
+    }
+
+
+
     // 创建主题切换按钮
     var mkThemeButton = function (framework) {
         var $theme = $(h('button.cp-toolbar-appmenu', [
@@ -168,6 +179,7 @@ define([
 
         framework._.toolbar.$drawer.append(helpMenu.button);
     };
+    //
 
     //previews:用于渲染不同格式（如Markdown、HTML、AsciiDoc）的预览功能
     var previews = {};
@@ -650,7 +662,7 @@ define([
             }
 
             // 修复标记偏移
-            markers.checkMarks(newContent);
+            //markers.checkMarks(newContent);
 
             // 更新编辑器内容
             // CodeMirror.contentUpdate("waaaaaaaa");//lkj add 注释 here：用于修改界面以及内容更新

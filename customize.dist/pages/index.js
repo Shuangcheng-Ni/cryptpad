@@ -40,11 +40,11 @@ define([
                 // [ 'sheet', Msg.type.sheet],
                 // [ 'doc', Msg.type.doc],
                 // [ 'presentation', Msg.type.presentation],
-                // [ 'pad', Msg.type.pad],
+                [ 'pad', Msg.type.pad],//富文本
                 // [ 'kanban', Msg.type.kanban],
                 [ 'code', Msg.type.code],
                 // [ 'form', Msg.type.form],
-                // [ 'whiteboard', Msg.type.whiteboard],
+                [ 'whiteboard', Msg.type.whiteboard],
                 // [ 'slide', Msg.type.slide]
             ].filter(function (x) {
                 return isAvailableType(x[0]);
