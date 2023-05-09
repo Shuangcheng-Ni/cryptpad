@@ -3597,6 +3597,7 @@ define([
                 return;
             }
             var allfiles = files[FILES_DATA];
+            console.log("www/common/drive-ui.js 3600: allfiles=" + allfiles);
             if (Object.keys(allfiles || {}).length === 0) {
                 createGhostIcon($container);
                 return;
@@ -3869,6 +3870,9 @@ define([
             }
 
             $list.append(h('li.cp-app-drive-element-separator', h('span', Messages.drive_active1Day)));
+            console.log("www/common/drive-ui.js 3872: filesList=" + filesList);
+            console.dir(filesList);
+            console.log('------\n\n\n\n\n\n');
             filesList.some(function (arr) {
                 var id = arr[0];
                 var file = arr[1];

@@ -78,6 +78,7 @@ define([
                 var src = fileHost + Hash.getBlobPathFromHex(hexFileName);
                 var key = secret.keys && secret.keys.cryptKey;
                 var cryptKey = Nacl.util.encodeBase64(key);
+                console.log(__filename + " 80: cryptKey=" + cryptKey);
 
                 var $mt = $dlview.find('media-tag');
                 $mt.attr('src', src);

@@ -3,7 +3,7 @@ define([
 ], function (AStore) {
 
     var create = function () {
-        var Store = AStore.create();
+        var Store = AStore.create().Store;
 
         var Rpc = {};
 

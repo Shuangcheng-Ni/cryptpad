@@ -3261,7 +3261,10 @@ define([
             if (!store.network) { return; }
             store.network.disconnect();
         };
-        return Store;
+        return {
+            Store: Store,
+            store: store
+        };
     };
 
     return {

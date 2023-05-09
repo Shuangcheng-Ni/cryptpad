@@ -1,5 +1,6 @@
 define([
     'jquery',
+    '/common/outer/async-store.js',
     '/common/diffMarked.js',
     '/bower_components/nthen/index.js',
     '/common/sframe-common.js',
@@ -43,10 +44,26 @@ define([
     'cm/addon/display/placeholder',
 
     'css!/customize/src/print.css',
-    'less!/code/app-code.less'
+    'less!/code/app-code.less'/* ,
+
+    '/api/config',
+    '/common/toolbar.js',
+    'json.sortify',
+    '/common/common-ui-elements.js',
+    '/common/common-constants.js',
+    '/common/common-feedback.js',
+
+    '/common/inner/share.js',
+    '/common/inner/access.js',
+    '/common/inner/properties.js',
+
+    '/common/proxy-manager.js',
+    '/customize/application_config.js',
+    '/customize/pages.js' */
 
 ], function (
     $,
+    AStore,
     DiffMd,
     nThen,
     SFCommon,
@@ -60,7 +77,19 @@ define([
     Visible,
     TypingTest,
     Messages,
-    CMeditor) {
+    CMeditor/* ,
+    ApiConfig,
+    Toolbar,
+    JSONSortify,
+    UIElements,
+    Constants,
+    Feedback,
+    Share,
+    Access,
+    Properties,
+    ProxyManager,
+    AppConfig,
+    Pages */) {
     window.CodeMirror = CMeditor;
 
     var MEDIA_TAG_MODES = Object.freeze([
@@ -211,15 +240,10 @@ define([
 
                 //f(String(text("Hello, world!")), $preview, framework._.sfCommon);//原代码
 
-                var $preview = $('#cp-app-code-preview-content');
-
-
-
-
-
-
+                $preview = $('#cp-app-code-preview-content');
+                // var $preview = $('#cp-app-code-preview-content');
                 //先改成左边的值
-                $preview.text(editor.getValue());
+                // $preview.text(editor.getValue());
 
             } catch (e) { console.error(e); }
         };
@@ -261,6 +285,9 @@ define([
             //-------------------新加新加ljy------------------------------------
             //------加上报错信息--nsc
             //------修复输出中含"Standard out:\n"时截断的bug--nsc
+            //------修复输出中含'<'、'>'、'&'等html特殊字符导致转义的问题--nsc
+            //------将输出中表示颜色的'\033[...m'字符转化为实际颜色(html的style)以避免乱码、提高美观度--nsc
+            //------修复输出中换行变空格、行首空格宽度不一致等格式问题(使用<br>、<pre>)--nsc
 
             console.log(editor.getValue());
             var $preview = $('#cp-app-code-preview-content');
@@ -307,27 +334,41 @@ define([
                     // return document.getElementsByClassName("card execution-stdout").textContent;
                 })
                 .then(payload => {//增加错误处理
-                    // 检查payload中是否包含"Standard err:"
+                    // 检查payload中是否包含"Standard out:"
                     if (payload.includes("Standard out:")) {
                         // 从payload中提取需要的部分
                         var pos = payload.indexOf("Standard out:\n") + "Standard out:\n".length;
                         var output = payload.substring(pos).trim();
+                        console.log("Compilation succeeded.");
                         console.log(output);
-                        // 将提取的输出输出到页面中
-                        // document.getElementById("output").textContent = output;
-                        $preview.text(output);
+                        output = output.replaceAll('&', '&amp;');
+                        output = output.replaceAll('<', '&lt;');
+                        output = output.replaceAll('>', '&gt;');
+                        output = output.replace(/\n/g, '<br>');
+                        $preview.html('<pre>' + output + '</pre>');
                     } else {
                         // 如果payload中无"Standard out:"，则输出错误信息
                         var pos = payload.indexOf("Standard error:\n") + "Standard error:\n".length;
-                        var errmsg = payload.substring(pos).trim().replace(/\033\[.*?\[K/g, '');
-                        console.log("Compilation error.");
+                        var errmsg = payload.substring(pos).trim();
+                        console.log("Compilation failed.");
                         console.log(errmsg);
-                        $preview.text(errmsg);
-                        
+                        errmsg = errmsg.replaceAll('&', '&amp;');
+                        errmsg = errmsg.replaceAll('<', '&lt;');
+                        errmsg = errmsg.replaceAll('>', '&gt;');
+                        errmsg = errmsg.replaceAll('\033[m\033[K', '</span>');
+                        errmsg = errmsg.replaceAll('\033[01m\033[K', '<span style="color: green">');
+                        errmsg = errmsg.replaceAll('\033[01;31m\033[K', '<span style="color: red">');
+                        errmsg = errmsg.replace(/\n/g, '<br>');
+                        $preview.html('<pre>' + errmsg + '</pre>');
                     }
+                    var Store = AStore.create();
+                    console.dir(Store);
+                    console.dir(window.Cryptpad_Store);
+                    console.dir(window.CryptPad_AsyncStore);
+                    console.log(Store.Store == window.Cryptpad_Store);
+                    console.log(Store.store == window.CryptPad_AsyncStore);
+                    console.dir(Store.store.manager);
                 })
-
-
 
             //forceDrawPreview();//暂时注释掉
 
@@ -337,10 +378,6 @@ define([
             framework._.sfCommon.setPadAttribute('previewMode', true, function (e) {
                 if (e) { return console.log(e); }
             });
-
-
-
-
             // }
 
             // ------删除分支--nsc

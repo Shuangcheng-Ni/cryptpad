@@ -195,6 +195,9 @@ define([
     var findFile = function (Env, id) {
         var ret = [];
         var userObjects = _getUserObjects(Env);
+        console.log('www/common/proxy-manager.js 198: userObjects=' + userObjects);
+        console.dir(userObjects);
+        console.log('------\n\n\n\n\n\n');
         userObjects.forEach(function (uo) {
             var fPath = _getUserObjectPath(Env, uo);
             var results = uo.findFile(id);
